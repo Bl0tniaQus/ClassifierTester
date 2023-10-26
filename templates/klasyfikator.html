@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+	
+	<div id="container">
+	
+	<div id="nav">
+	<p><a href="/">Źródlo danych</a></p>
+	{% if 'dane_raw' in session%}
+	<p><a href="/dane">Opcje danych</a></p>
+	{% endif %}
+	{% if 'dane' in session %}
+	<p><a href="/klasyfikator">Algorytm</a></p>
+	{% endif %}
+	{% if 'confm' in session %}
+	<p><a href="/wynik">Wynik</a></p>
+	{% endif %}
+	{% if 'dane_raw' in session %}
+	<p><a id="wyczysc" href="/wyczysc">Wyczyść</a></p>
+	{% endif %}
+	</div>
+	
+	<div id="content">
+	
+	
+		<h4>Wybierz algorytm</h4>
+		<form method="post" action="wynik">
+		<select id="algs" name="algs">
+			<option value="Regresja logistyczna" selected>Regresja logistyczna</option>
+			<option value="KNN">KNN</option>
+			<option value="SVM">SVM</option>
+		</select>
+		<div id="params">
+		Epoki: <input type="number" name="epoki" value="100" required><br/>
+		Tolerancja: <input type="number" name="tol" value=0.0001 step="any"> <br/>
+		Metoda: <select name="method">
+			<option value="lbfgs" selected>lbfgs</option>
+			<option value="liblinear">liblinear</option>
+			<option value="newton-cg">newton-cg</option>
+			<option value="newton-cholesky">newton-cholesky</option>
+			<option value="sag">sag</option>
+			<option value="saga">saga</option>
+			</select>
+		</div>
+		<button type="submit">Zatwierdź</button>
+	</form>
+	
+	</div>
+	
+	
+	</body>
+</html>
+<script src="{{ url_for('static', filename='algs.js') }}"></script>
