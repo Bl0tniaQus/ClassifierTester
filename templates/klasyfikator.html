@@ -11,33 +11,38 @@
 	
 	<div id="nav">
 	<p><a href="/">Źródlo danych</a></p>
-	{% if 'dane_raw' in session%}
 	<p><a href="/dane">Opcje danych</a></p>
-	{% endif %}
-	{% if 'dane' in session %}
 	<p><a href="/klasyfikator">Algorytm</a></p>
-	{% endif %}
-	{% if 'confm' in session %}
 	<p><a href="/wynik">Wynik</a></p>
-	{% endif %}
-	{% if 'dane_raw' in session %}
+	<p><a href="/kopiuj">Kopiuj</a></p>
 	<p><a id="wyczysc" href="/wyczysc">Wyczyść</a></p>
-	{% endif %}
+	<p><form method="post" action="wynik"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
 	</div>
 	
 	<div id="content">
-	
-	
+		Slot: {{session['slot']}}<br/>
+		{% if session['slot']==1 %}
+	Obecny plik: {{session['wynik1'].filename}}<br/>
+	Obecny algorytm: {{session['wynik1'].alg}}<br/>
+	{{session['wynik1'].params|safe}}
+	{% elif session['slot']==2 %}
+	Obecny plik: {{session['wynik2'].filename}}<br/>
+	Obecny algorytm: {{session['wynik2'].alg}}
+	{{session['wynik2'].params|safe}}
+	{% endif %}
 		<h4>Wybierz algorytm</h4>
 		<form method="post" action="wynik">
 		<select id="algs" name="algs">
 			<option value="Regresja logistyczna" selected>Regresja logistyczna</option>
 			<option value="KNN">KNN</option>
 			<option value="SVM">SVM</option>
+			<option value="Dummy">Atrapa(Dummy)</option>
+			<option value="NB">Naive Bayes</option>
+			<option value="GBC">Gradient boosting</option>
 		</select>
 		<div id="params">
 		Epoki: <input type="number" name="epoki" value="100" required><br/>
-		Tolerancja: <input type="number" name="tol" value=0.0001 step="any"> <br/>
+		Tolerancja: <input type="number" name="tol" value="0.0001" step="any"> <br/>
 		Metoda: <select name="method">
 			<option value="lbfgs" selected>lbfgs</option>
 			<option value="liblinear">liblinear</option>
@@ -48,6 +53,7 @@
 			</select>
 		</div>
 		<button type="submit">Zatwierdź</button>
+		<button type="submit" name="auto" id="auto">Auto</button><div id="wait">Proszę czekać</div>
 	</form>
 	
 	</div>
@@ -56,3 +62,4 @@
 	</body>
 </html>
 <script src="{{ url_for('static', filename='algs.js') }}"></script>
+<script src="{{ url_for('static', filename='wait.js') }}"></script>

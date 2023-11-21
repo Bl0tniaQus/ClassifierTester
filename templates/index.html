@@ -11,22 +11,21 @@
 	
 	<div id="nav">
 	<p><a href="/">Źródlo danych</a></p>
-	{% if 'dane_raw' in session%}
 	<p><a href="/dane">Opcje danych</a></p>
-	{% endif %}
-	{% if 'dane' in session %}
 	<p><a href="/klasyfikator">Algorytm</a></p>
-	{% endif %}
-	{% if 'confm' in session %}
 	<p><a href="/wynik">Wynik</a></p>
-	{% endif %}
-	{% if 'dane_raw' in session %}
+	<p><a href="/kopiuj">Kopiuj</a></p>
 	<p><a id="wyczysc" href="/wyczysc">Wyczyść</a></p>
-	{% endif %}
+	<p><form method="post" action="dane"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
 	</div>
 	
 	<div id="content">
-	
+	Slot: {{session['slot']}}<br/>
+	{% if session['slot']==1 %}
+	Obecny plik: {{session['wynik1'].filename}}
+	{% elif session['slot']==2 %}
+	Obecny plik: {{session['wynik2'].filename}}
+	{% endif %}
 	<h4>Prześlij plik z danymi</h4>
 	<form method="post" action="dane" enctype=multipart/form-data>
 		Wybierz plik: <input type="file" name="dane" required/><br/>

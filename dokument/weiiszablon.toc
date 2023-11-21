@@ -1,0 +1,21 @@
+\babel@toc {polish}{}\relax 
+\contentsline {section}{Wykaz symboli, oznaczeń i skrótów (opcjonalny)}{\footnotesize 5}{}%
+\contentsline {section}{\numberline {1}Wprowadzenie}{\footnotesize 6}{}%
+\contentsline {subsection}{\numberline {1.1}Pojęcie klasyfikatora}{\footnotesize 6}{}%
+\contentsline {subsection}{\numberline {1.2}Znaczenie klasyfikacji}{\footnotesize 6}{}%
+\contentsline {subsection}{\numberline {1.3}Problemy rozwiązań wykorzystujących klasyfikację}{\footnotesize 7}{}%
+\contentsline {section}{\numberline {2}Tekst zasadniczy -- I}{\footnotesize 7}{}%
+\contentsline {subsection}{\numberline {2.1}Formatowanie rozdziałów i podrozdziałów}{\footnotesize 7}{}%
+\contentsline {section}{\numberline {3}Tekst zasadniczy -- II}{\footnotesize 8}{}%
+\contentsline {subsection}{\numberline {3.1}Formatowanie tekstu. Należy pamiętać, że na końcu tytułu rozdziału, podrozdziału i zakresu nie umieszcza się kropki}{\footnotesize 8}{}%
+\contentsline {subsubsection}{\numberline {3.1.1}Marginesy i akapity}{\footnotesize 8}{}%
+\contentsline {subsubsection}{\numberline {3.1.2}Zalecenia co do sposobu pisania jednostek i symboli wielkości fizycznych}{\footnotesize 9}{}%
+\contentsline {subsubsection}{\numberline {3.1.3}Rysunki i tabele}{\footnotesize 11}{}%
+\contentsline {subsubsection}{\numberline {3.1.4}Wzory matematyczne}{\footnotesize 12}{}%
+\contentsline {subsubsection}{\numberline {3.1.5}Listingi programów}{\footnotesize 14}{}%
+\contentsline {subsubsection}{\numberline {3.1.6}Numerowanie i punktowanie}{\footnotesize 14}{}%
+\contentsline {subsection}{\numberline {3.2}Wykaz literatury}{\footnotesize 15}{}%
+\contentsline {subsection}{\numberline {3.3}Wydruk pracy}{\footnotesize 15}{}%
+\contentsline {section}{\numberline {4}Podsumowanie i wnioski końcowe}{\footnotesize 17}{}%
+\contentsline {section}{Załączniki}{\footnotesize 18}{}%
+\contentsline {section}{Literatura}{\footnotesize 19}{}%

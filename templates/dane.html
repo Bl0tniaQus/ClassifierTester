@@ -10,23 +10,23 @@
 	
 	<div id="nav">
 	<p><a href="/">Źródlo danych</a></p>
-	{% if 'dane_raw' in session%}
 	<p><a href="/dane">Opcje danych</a></p>
-	{% endif %}
-	{% if 'dane' in session %}
 	<p><a href="/klasyfikator">Algorytm</a></p>
-	{% endif %}
-	{% if 'confm' in session %}
 	<p><a href="/wynik">Wynik</a></p>
-	{% endif %}
-	{% if 'dane_raw' in session %}
+	<p><a href="/kopiuj">Kopiuj</a></p>
 	<p><a id="wyczysc" href="/wyczysc">Wyczyść</a></p>
-	{% endif %}
+	<p><form method="post" action="klasyfikator"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
 	</div>
 	
 	<div id="content">
 	
 	<h4>Przygotuj dane</h4>
+	Slot: {{session['slot']}}<br/>
+	{% if session['slot']==1 %}
+	Obecny plik: {{session['wynik1'].filename}}
+	{% elif session['slot']==2 %}
+	Obecny plik: {{session['wynik2'].filename}}
+	{% endif %}
 	<form method="post" action="klasyfikator">
 		{% if 'target_col' in session %}
 		Numer kolumny z nazwami klas: <input type="number" name="target" value="{{session['target_col']}}"required/><br />
@@ -40,10 +40,15 @@
 		Uśrednij<input type="radio" name="puste" value="usrednij"><br/>
 		<button type="submit">Zatwierdź</button>
 	</form>
-	Wierszy: {{n_wierszy}}<br/>
+	{% if session['slot']==1 %}
+	Wierszy: {{session['wynik1'].n_wierszy}}<br/>
 	Podgląd:
-	{{preview|safe}}
-	
+	{{session['wynik1'].preview|safe}}
+	{% elif session['slot']==2 %}
+	Wierszy: {{session['wynik2'].n_wierszy}}<br/>
+	Podgląd:
+	{{session['wynik2'].preview|safe}}
+	{% endif %}
 	</div>
 	
 	

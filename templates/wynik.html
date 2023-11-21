@@ -11,41 +11,65 @@
 	
 <div id="nav">
 	<p><a href="/">Źródlo danych</a></p>
-	{% if 'dane_raw' in session%}
 	<p><a href="/dane">Opcje danych</a></p>
-	{% endif %}
-	{% if 'dane' in session %}
 	<p><a href="/klasyfikator">Algorytm</a></p>
-	{% endif %}
-	{% if 'confm' in session %}
 	<p><a href="/wynik">Wynik</a></p>
-	{% endif %}
-	{% if 'dane_raw' in session %}
+	<p><a href="/kopiuj">Kopiuj</a></p>
 	<p><a id="wyczysc" href="/wyczysc">Wyczyść</a></p>
-	{% endif %}
+	<p><form method="post" action="wynik"><button type="submit" name="slotw" value="1">1</button><button type="submit" name="slotw" value="2">2</button></form></p>
 	</div>
-	
 	<div id="content">
-	
-	<h4>Algorytm: {{alg}}</h4>
-	{% if alg=="KNN" %}
-	n = {{params}} <br/>
+	Slot: {{session['slot']}}<br/>
+	{% if session['slot']==1%}
+	<h4>Algorytm: {{session['wynik1'].alg}}</h4>
+	Dane: {{session['wynik1'].filename}}<br />
+	{% if session['wynik1'].alg=="KNN" %}
+	n = {{session['wynik1'].params}} <br/>
 	{% endif %}
-	{% if alg=="Regresja logistyczna" %}
-	{{params|safe}} <br/><br/>
+	{% if session['wynik1'].alg=="Regresja logistyczna" %}
+	{{session['wynik1'].params|safe}} <br/><br/>
 	{% endif %}
-	{% if alg=="SVM" %}
-	{{params|safe}} <br/><br/>
+	{% if session['wynik1'].alg=="SVM" %}
+	{{session['wynik1'].params|safe}} <br/><br/>
 	{% endif %}
-	Accuracy = {{acc}}<br/>
-	Recall = {{rec}}<br/>
-	Precision = {{prec}}<br/>
+	{% if session['wynik1'].alg=="Dummy" %}
+	{{session['wynik1'].params|safe}} <br/><br/>
+	{% endif %}
+	Accuracy = {{session['wynik1'].acc}}<br/>
+	Recall = {{session['wynik1'].rec}}<br/>
+	Precision = {{session['wynik1'].prec}}<br/>
 	<h5>Macierz pomyłek</h5>
-	{{confm|safe}}
+	{{session['wynik1'].confm|safe}}
+	
+	{% elif session['slot']==2%}
+	
+	
+	<h4>Algorytm: {{session['wynik2'].alg}}</h4>
+	Dane: {{session['wynik2'].filename}}<br />
+	{% if session['wynik2'].alg=="KNN" %}
+	n = {{session['wynik2'].params}} <br/>
+	{% endif %}
+	{% if session['wynik2'].alg=="Regresja logistyczna" %}
+	{{session['wynik2'].params|safe}} <br/><br/>
+	{% endif %}
+	{% if session['wynik2'].alg=="SVM" %}
+	{{session['wynik2'].params|safe}} <br/><br/>
+	{% endif %}
+	{% if session['wynik2'].alg=="Dummy" %}
+	{{session['wynik2'].params|safe}} <br/><br/>
+	{% endif %}
+	Accuracy = {{session['wynik2'].acc}}<br/>
+	Recall = {{session['wynik2'].rec}}<br/>
+	Precision = {{session['wynik2'].prec}}<br/>
+	<h5>Macierz pomyłek</h5>
+	{{session['wynik2'].confm|safe}}
+
+	{% endif %}
+	<form method="post" action="/wynik">
+		<button type="submit" name="raport">Pobierz raport</button>
 	</form>
-	
 	</div>
-	
+	</div>
 	
 	
 	</body>
