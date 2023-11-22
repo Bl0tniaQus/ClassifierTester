@@ -11,6 +11,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.svm import SVC
+from sklearn.model_selection import cross_validate
 from werkzeug.utils import secure_filename
 
 #raporty
@@ -308,7 +309,10 @@ def wynik():
 					degree=3
 				tol = float(request.form['tol'])
 				model = SVC(kernel=kernel,C=c,tol=tol,max_iter=max_iter,degree=degree).fit(dane,target)
-			params = 'Tolerancja: '+str(tol)+'<br/>Max. n iteracji: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Jądro: '+str(kernel)+'<br/>Stopień (dla poly): '+str(degree)
+			if (kernel=="poly"):
+				params = 'Tolerancja: '+str(tol)+'<br/>Max. n iteracji: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Jądro: '+str(kernel)+'<br/>Stopień: '+str(degree)
+			else:
+				params = 'Tolerancja: '+str(tol)+'<br/>Max. n iteracji: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Jądro: '+str(kernel);
 		elif alg=="Dummy":
 			if 'auto' in request.form:
 				param_grid = {'strategy' : ['most_frequent', 'uniform', 'prior', 'stratified']}
@@ -339,7 +343,13 @@ def wynik():
 				criterion = request.form['criterion']
 				model = GradientBoostingClassifier(max_depth = max_depth, learning_rate = learning_rate, tol = tol, criterion = criterion, n_estimators = n_estimators).fit(dane,target)
 			params=""
-		result = model.predict(dane)
+			
+			
+		scores = cross_validate(model, dane, target, scoring=["accuracy","precision_macro","recall_macro"])
+		acc = np.average(scores["test_accuracy"])
+		prec = np.average(scores["test_precision_macro"])
+		rec = np.average(scores["test_recall_macro"])
+		result = model.predict(dane)	
 		t = sorted(list(set(target)))
 		cm = confusion_matrix(result,target,labels=t)
 		confm = '<table><tr><td>T\\P</td>'
@@ -363,9 +373,9 @@ def wynik():
 			session['wynik1'].confm=confm
 			session['wynik1'].params=params
 			session['wynik1'].alg=alg
-			session['wynik1'].acc=round(accuracy_score(result,target),5)
-			session['wynik1'].rec=round(recall_score(result,target,average='weighted'),5)
-			session['wynik1'].prec=round(precision_score(result,target,average='weighted'),5)
+			session['wynik1'].acc=round(acc,5)
+			session['wynik1'].rec=round(rec,5)
+			session['wynik1'].prec=round(prec,5)
 			
 			raport+='Dataset: '+session['wynik1'].filename+'\n'
 			raport+='Method: '+session['wynik1'].alg+'\n'
@@ -381,9 +391,9 @@ def wynik():
 			session['wynik2'].confm=confm
 			session['wynik2'].params=params
 			session['wynik2'].alg=alg
-			session['wynik2'].acc=round(accuracy_score(result,target),5)
-			session['wynik2'].rec=round(recall_score(result,target,average='weighted'),5)
-			session['wynik2'].prec=round(precision_score(result,target,average='weighted'),5)
+			session['wynik2'].acc=round(acc,5)
+			session['wynik2'].rec=round(rec,5)
+			session['wynik2'].prec=round(prec,5)
 			
 			raport+='Dataset: '+session['wynik2'].filename+'\n'
 			raport+='Method: '+session['wynik2'].alg+'\n'
@@ -393,9 +403,6 @@ def wynik():
 			raport+='Recall: '+str(session['wynik2'].rec)+'\n'
 			raport+='Confusion Matrix T\\P\n'+confm_raport;
 			session['wynik2'].raport = raport
-	print(session['wynik1'].dane)
-	print("----------------------------")
-	print(session['wynik2'].dane)
 	return render_template("wynik.html")
 @app.route("/wyczysc")
 def wyczysc():
