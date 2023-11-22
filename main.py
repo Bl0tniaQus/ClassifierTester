@@ -33,7 +33,7 @@ from werkzeug.utils import secure_filename
 #lepsze reporty
 #algorytmy
 
-#KStratifiedFold
+#KStratifiedFold random_state
 
 
 
