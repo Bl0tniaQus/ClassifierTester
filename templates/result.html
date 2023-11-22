@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+	
+	<div id="container">
+	
+<div id="nav">
+	<p><a href="/">Data source</a></p>
+	<p><a href="/dane">Data options</a></p>
+	<p><a href="/klasyfikator">Algorithm</a></p>
+	<p><a href="/result">Result</a></p>
+	<p><a href="/kopiuj">Copy</a></p>
+	<p><a id="wyczysc" href="/wyczysc">Reset</a></p>
+	<p><form method="post" action="dane"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
+	</div>
+	<div id="content">
+	Slot: {{session['slot']}}<br/>
+	{% if session['slot']==1%}
+	<h4>Algorithm: {{session['result1'].alg}}</h4>
+	Dane: {{session['result1'].filename}}<br />
+	{% if session['result1'].alg=="KNN" %}
+	n = {{session['result1'].params}} <br/>
+	{% endif %}
+	{% if session['result1'].alg=="Regresja logistyczna" %}
+	{{session['result1'].params|safe}} <br/><br/>
+	{% endif %}
+	{% if session['result1'].alg=="SVM" %}
+	{{session['result1'].params|safe}} <br/><br/>
+	{% endif %}
+	{% if session['result1'].alg=="Dummy" %}
+	{{session['result1'].params|safe}} <br/><br/>
+	{% endif %}
+	Accuracy = {{session['result1'].acc}}<br/>
+	Recall = {{session['result1'].rec}}<br/>
+	Precision = {{session['result1'].prec}}<br/>
+	<h5>Confusion Matrix</h5>
+	{{session['result1'].confm|safe}}
+	
+	{% elif session['slot']==2%}
+	
+	
+	<h4>Algorithm: {{session['result2'].alg}}</h4>
+	Dataset: {{session['result2'].filename}}<br />
+	{% if session['result2'].alg=="KNN" %}
+	n = {{session['result2'].params}} <br/>
+	{% endif %}
+	{% if session['result2'].alg=="Regresja logistyczna" %}
+	{{session['result2'].params|safe}} <br/><br/>
+	{% endif %}
+	{% if session['result2'].alg=="SVM" %}
+	{{session['result2'].params|safe}} <br/><br/>
+	{% endif %}
+	{% if session['result2'].alg=="Dummy" %}
+	{{session['result2'].params|safe}} <br/><br/>
+	{% endif %}
+	Accuracy = {{session['result2'].acc}}<br/>
+	Recall = {{session['result2'].rec}}<br/>
+	Precision = {{session['result2'].prec}}<br/>
+	<h5>Macierz pomyłek</h5>
+	{{session['result2'].confm|safe}}
+
+	{% endif %}
+	<form method="post" action="/result">
+		<button type="submit" name="report">Download report</button>
+	</form>
+	</div>
+	</div>
+	
+	
+	</body>
+</html>

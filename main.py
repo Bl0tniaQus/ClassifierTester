@@ -14,7 +14,7 @@ from sklearn.svm import SVC
 from sklearn.model_selection import cross_validate
 from werkzeug.utils import secure_filename
 
-#raporty
+#reporty
 #gridsearchCV (auto dopasowanie)
 #algorytmy
 
@@ -30,8 +30,11 @@ from werkzeug.utils import secure_filename
 #svm
 
 #todo 14.11
-#lepsze raporty
+#lepsze reporty
 #algorytmy
+
+#KStratifiedFold
+
 
 
 app = Flask(__name__)
@@ -40,7 +43,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-class Wynik:
+class Result:
 	filename=""
 	dane_raw=[]
 	preview=""
@@ -50,7 +53,7 @@ class Wynik:
 	target=[]
 	confm=""
 	params=""
-	raport=""
+	report=""
 	alg=""
 	acc=0
 	rec=0
@@ -123,9 +126,9 @@ def usrednijBraki(dane,target):
 def index():
 	if 'slot' not in session:
 		session["slot"]=1
-	if 'wynik1' not in session and 'wynik2' not in session:
-		session["wynik1"] = Wynik()
-		session["wynik2"] = Wynik()
+	if 'result1' not in session and 'result2' not in session:
+		session["result1"] = Result()
+		session["result2"] = Result()
 	return render_template("index.html")
 @app.route("/dane", methods=["POST","GET"])
 def dane():
@@ -150,19 +153,18 @@ def dane():
 			for x in dane[y]:
 				preview=preview+'<td>'+x+'</td>'
 			preview+='</tr>'
-		print(Wynik())
 		if session["slot"]==1:
-			session['wynik1'] = Wynik()
-			session['wynik1'].preview=preview
-			session['wynik1'].n_wierszy=len(dane)
-			session['wynik1'].filename=nazwa_pliku
-			session['wynik1'].dane_raw = dane
+			session['result1'] = Result()
+			session['result1'].preview=preview
+			session['result1'].n_wierszy=len(dane)
+			session['result1'].filename=nazwa_pliku
+			session['result1'].dane_raw = dane
 		elif session["slot"]==2:
-			session['wynik2'] = Wynik()
-			session['wynik2'].preview=preview
-			session['wynik2'].n_wierszy=len(dane)
-			session['wynik2'].filename=nazwa_pliku
-			session['wynik2'].dane_raw = dane
+			session['result2'] = Result()
+			session['result2'].preview=preview
+			session['result2'].n_wierszy=len(dane)
+			session['result2'].filename=nazwa_pliku
+			session['result2'].dane_raw = dane
 	if 'preview' in session:
 		return render_template("dane.html")
 	return render_template("dane.html")
@@ -173,9 +175,9 @@ def klasyfikator():
 			session["slot"] = int(request.form['slot'])
 			return redirect("/dane")
 		if session['slot']==1:
-			dane=session['wynik1'].dane_raw
+			dane=session['result1'].dane_raw
 		elif session['slot']==2:
-			dane=session['wynik2'].dane_raw
+			dane=session['result2'].dane_raw
 		if not request.form.get('pwiersz'):
 			dane = np.delete(dane, (0), axis=0)
 		
@@ -204,54 +206,54 @@ def klasyfikator():
 			danet[row] = vec
 		dane = danet.transpose()
 		if session["slot"]==1:
-			session['wynik1'].target_col=request.form["target"]
-			session['wynik1'].dane=dane
-			session['wynik1'].target=target
-			session['wynik1'].confm=""
-			session['wynik1'].params=""
-			session['wynik1'].alg=""
-			session['wynik1'].acc=0
-			session['wynik1'].rec=0
-			session['wynik1'].prec=0
+			session['result1'].target_col=request.form["target"]
+			session['result1'].dane=dane
+			session['result1'].target=target
+			session['result1'].confm=""
+			session['result1'].params=""
+			session['result1'].alg=""
+			session['result1'].acc=0
+			session['result1'].rec=0
+			session['result1'].prec=0
 		elif session["slot"]==2:
-			session['wynik2'].target_col=request.form["target"]
-			session['wynik2'].dane=dane
-			session['wynik2'].target=target
-			session['wynik2'].confm=""
-			session['wynik2'].params=""
-			session['wynik2'].alg=""
-			session['wynik2'].acc=0
-			session['wynik2'].rec=0
-			session['wynik2'].prec=0
+			session['result2'].target_col=request.form["target"]
+			session['result2'].dane=dane
+			session['result2'].target=target
+			session['result2'].confm=""
+			session['result2'].params=""
+			session['result2'].alg=""
+			session['result2'].acc=0
+			session['result2'].rec=0
+			session['result2'].prec=0
 	return render_template("klasyfikator.html")
-@app.route("/wynik", methods=["POST","GET"])
-def wynik():
+@app.route("/result", methods=["POST","GET"])
+def result():
 	if request.method=="POST":
 		if "slot" in request.form:
 			session["slot"] = int(request.form['slot'])
 			return redirect("/klasyfikator")
 		if "slotw" in request.form:
 			session["slot"] = int(request.form['slotw'])
-			return redirect("/wynik")
-		if "raport" in request.form:
+			return redirect("/result")
+		if "report" in request.form:
 			if not os.path.exists('./tmp'):
 				os.mkdir('./tmp')
-			if os.path.exists('./tmp/raport.txt'):
-				os.remove('./tmp/raport.txt')
-			if not os.path.exists('./tmp/raport.txt'):
-				with open('./tmp/raport.txt', "w") as f:
+			if os.path.exists('./tmp/report.txt'):
+				os.remove('./tmp/report.txt')
+			if not os.path.exists('./tmp/report.txt'):
+				with open('./tmp/report.txt', "w") as f:
 					if session['slot']==1:
-						f.write(session['wynik1'].raport)
+						f.write(session['result1'].report)
 					elif session['slot']==2:
-						f.write(session['wynik2'].raport)
-			return send_file('./tmp/raport.txt', as_attachment=True)
+						f.write(session['result2'].report)
+			return send_file('./tmp/report.txt', as_attachment=True)
 		alg = request.form['algs']
 		if session['slot']==1:
-			dane = session['wynik1'].dane
-			target = session['wynik1'].target
+			dane = session['result1'].dane
+			target = session['result1'].target
 		elif session['slot']==2:
-			dane = session['wynik2'].dane
-			target = session['wynik2'].target
+			dane = session['result2'].dane
+			target = session['result2'].target
 		if alg=="Regresja logistyczna":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'solver' : ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}
@@ -268,13 +270,14 @@ def wynik():
 				if max_iter<=0:
 					max_iter=100
 			model = LogisticRegression(max_iter = max_iter, tol = tol, solver=solver).fit(dane,target)
-			params='L. epok: '+str(max_iter)+'<br/>Tolerancja: '+str(tol)+'<br/>Solver: '+solver
+			params='L. epok: '+str(max_iter)+'<br/>Tolerancy: '+str(tol)+'<br/>Solver: '+solver
 		elif alg=="KNN":
 			if 'auto' in request.form:
 				param_grid = {'n_neighbors' : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,20,30,50,100]}
-				gridsearch = GridSearchCV(estimator=KNeighborsClassifier(),param_grid=param_grid).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=KNeighborsClassifier(),param_grid=param_grid, cv=10).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
+				print(best_params)
 				n = best_params["n_neighbors"]
 			else:
 				if request.form['n']:
@@ -310,9 +313,9 @@ def wynik():
 				tol = float(request.form['tol'])
 				model = SVC(kernel=kernel,C=c,tol=tol,max_iter=max_iter,degree=degree).fit(dane,target)
 			if (kernel=="poly"):
-				params = 'Tolerancja: '+str(tol)+'<br/>Max. n iteracji: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Jądro: '+str(kernel)+'<br/>Stopień: '+str(degree)
+				params = 'Tolerancja: '+str(tol)+'<br/>Max iteration number: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Kernel: '+str(kernel)+'<br/>Polynominal degree: '+str(degree)
 			else:
-				params = 'Tolerancja: '+str(tol)+'<br/>Max. n iteracji: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Jądro: '+str(kernel);
+				params = 'Tolerancja: '+str(tol)+'<br/>Max iteration number: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Kernel: '+str(kernel);
 		elif alg=="Dummy":
 			if 'auto' in request.form:
 				param_grid = {'strategy' : ['most_frequent', 'uniform', 'prior', 'stratified']}
@@ -345,7 +348,7 @@ def wynik():
 			params=""
 			
 			
-		scores = cross_validate(model, dane, target, scoring=["accuracy","precision_macro","recall_macro"])
+		scores = cross_validate(model, dane, target, scoring=["accuracy","precision_macro","recall_macro"], cv=10)
 		acc = np.average(scores["test_accuracy"])
 		prec = np.average(scores["test_precision_macro"])
 		rec = np.average(scores["test_recall_macro"])
@@ -353,57 +356,58 @@ def wynik():
 		t = sorted(list(set(target)))
 		cm = confusion_matrix(result,target,labels=t)
 		confm = '<table><tr><td>T\\P</td>'
-		confm_raport = ' '
+		confm_report = ' '
 		for i in t:
 			confm=confm+'<td>'+i+'</td>'
-			confm_raport=confm_raport+' '+i
+			confm_report=confm_report+' '+i
 		confm +='</tr>'
-		confm_raport+='\n'
+		confm_report+='\n'
 		for j in range(len(cm)):
 			confm=confm+'<tr><td>'+t[j]+'</td>'
-			confm_raport=confm_raport+t[j];
+			confm_report=confm_report+t[j];
 			for k in cm[j]:
 				confm=confm+'<td>'+str(k)+'</td>'
-				confm_raport=confm_raport+' '+str(k)
+				confm_report=confm_report+' '+str(k)
 			confm+='</tr>'
-			confm_raport=confm_raport+'\n'
+			confm_report=confm_report+'\n'
 		confm+='</table>'
-		raport=''
+		report=''
 		if session["slot"]==1:
-			session['wynik1'].confm=confm
-			session['wynik1'].params=params
-			session['wynik1'].alg=alg
-			session['wynik1'].acc=round(acc,5)
-			session['wynik1'].rec=round(rec,5)
-			session['wynik1'].prec=round(prec,5)
+			session['result1'].confm=confm
+			session['result1'].params=params
+			session['result1'].alg=alg
+			session['result1'].acc=round(acc,5)
+			session['result1'].rec=round(rec,5)
+			session['result1'].prec=round(prec,5)
 			
-			raport+='Dataset: '+session['wynik1'].filename+'\n'
-			raport+='Method: '+session['wynik1'].alg+'\n'
-			raport+='Params: '+str(session['wynik1'].params)+'\n'
-			raport+='Accuracy: '+str(session['wynik1'].acc)+'\n'
-			raport+='Precision: '+str(session['wynik1'].prec)+'\n'
-			raport+='Recall: '+str(session['wynik1'].rec)+'\n'
-			raport+='Confusion Matrix T\\P\n'+confm_raport;
-			session['wynik1'].raport = raport
+			report+='Dataset: '+session['result1'].filename+'\n'
+			report+='Method: '+session['result1'].alg+'\n'
+			report+='Params: '+str(session['result1'].params).replace("<br/>",'\n')+'\n'
+			report+='Accuracy: '+str(session['result1'].acc)+'\n'
+			report+='Precision: '+str(session['result1'].prec)+'\n'
+			report+='Recall: '+str(session['result1'].rec)+'\n'
+			report+='Confusion Matrix T\\P\n'+confm_report;
+			session['result1'].report = report
 			
 			
 		elif session["slot"]==2:
-			session['wynik2'].confm=confm
-			session['wynik2'].params=params
-			session['wynik2'].alg=alg
-			session['wynik2'].acc=round(acc,5)
-			session['wynik2'].rec=round(rec,5)
-			session['wynik2'].prec=round(prec,5)
+			session['result2'].confm=confm
+			session['result2'].params=params
+			session['result2'].alg=alg
+			session['result2'].acc=round(acc,5)
+			session['result2'].rec=round(rec,5)
+			session['result2'].prec=round(prec,5)
 			
-			raport+='Dataset: '+session['wynik2'].filename+'\n'
-			raport+='Method: '+session['wynik2'].alg+'\n'
-			raport+='Params: '+str(session['wynik2'].params)+'\n'
-			raport+='Accuracy: '+str(session['wynik2'].acc)+'\n'
-			raport+='Precision: '+str(session['wynik2'].prec)+'\n'
-			raport+='Recall: '+str(session['wynik2'].rec)+'\n'
-			raport+='Confusion Matrix T\\P\n'+confm_raport;
-			session['wynik2'].raport = raport
-	return render_template("wynik.html")
+			report+='Dataset: '+session['result2'].filename+'\n'
+			report+='Method: '+session['result2'].alg+'\n'
+			report+='Params: '+str(session['result2'].params).replace("<br/>",'\n')+'\n'
+			report+='Accuracy: '+str(session['result2'].acc)+'\n'
+			report+='Precision: '+str(session['result2'].prec)+'\n'
+			report+='Recall: '+str(session['result2'].rec)+'\n'
+			report+='Confusion Matrix T\\P\n'+confm_report;
+			session['result2'].report = report
+	print(len(session['result1'].dane))
+	return render_template("result.html")
 @app.route("/wyczysc")
 def wyczysc():
 	session.clear()
@@ -412,9 +416,9 @@ def wyczysc():
 def kopiuj():
 	if request.method=="POST":
 		if request.form['kopia']=="12":
-			session['wynik2'] = copy(session["wynik1"])
+			session['result2'] = copy(session["result1"])
 		elif request.form['kopia']=="21":
-			session['wynik1'] = copy(session["wynik2"])
+			session['result1'] = copy(session["result2"])
 	return render_template("kopiuj.html")
 if __name__ =="__main__":
 	app.run(debug=True)

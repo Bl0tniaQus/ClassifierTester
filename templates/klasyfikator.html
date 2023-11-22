@@ -10,40 +10,40 @@
 	<div id="container">
 	
 	<div id="nav">
-	<p><a href="/">Źródlo danych</a></p>
-	<p><a href="/dane">Opcje danych</a></p>
-	<p><a href="/klasyfikator">Algorytm</a></p>
-	<p><a href="/wynik">Wynik</a></p>
-	<p><a href="/kopiuj">Kopiuj</a></p>
-	<p><a id="wyczysc" href="/wyczysc">Wyczyść</a></p>
-	<p><form method="post" action="wynik"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
+	<p><a href="/">Data source</a></p>
+	<p><a href="/dane">Data options</a></p>
+	<p><a href="/klasyfikator">Algorithm</a></p>
+	<p><a href="/result">Result</a></p>
+	<p><a href="/kopiuj">Copy</a></p>
+	<p><a id="wyczysc" href="/wyczysc">Reset</a></p>
+	<p><form method="post" action="dane"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
 	</div>
 	
 	<div id="content">
 		Slot: {{session['slot']}}<br/>
 		{% if session['slot']==1 %}
-	Obecny plik: {{session['wynik1'].filename}}<br/>
-	Obecny algorytm: {{session['wynik1'].alg}}<br/>
-	{{session['wynik1'].params|safe}}
+	Current file: {{session['result1'].filename}}<br/>
+	Current algorithm: {{session['result1'].alg}}<br/>
+	{{session['result1'].params|safe}}
 	{% elif session['slot']==2 %}
-	Obecny plik: {{session['wynik2'].filename}}<br/>
-	Obecny algorytm: {{session['wynik2'].alg}}
-	{{session['wynik2'].params|safe}}
+	Current file: {{session['result2'].filename}}<br/>
+	Current algorithm: {{session['result2'].alg}}
+	{{session['result2'].params|safe}}
 	{% endif %}
-		<h4>Wybierz algorytm</h4>
-		<form method="post" action="wynik">
+		<h4>Select algorithm</h4>
+		<form method="post" action="result">
 		<select id="algs" name="algs">
-			<option value="Regresja logistyczna" selected>Regresja logistyczna</option>
+			<option value="Regresja logistyczna" selected>Logistic regression</option>
 			<option value="KNN">KNN</option>
 			<option value="SVM">SVM</option>
-			<option value="Dummy">Atrapa(Dummy)</option>
+			<option value="Dummy">Dummy</option>
 			<option value="NB">Naive Bayes</option>
 			<option value="GBC">Gradient boosting</option>
 		</select>
 		<div id="params">
-		Epoki: <input type="number" name="epoki" value="100" required><br/>
-		Tolerancja: <input type="number" name="tol" value="0.0001" step="any"> <br/>
-		Metoda: <select name="method">
+		Epochs: <input type="number" name="epoki" value="100" required><br/>
+		Tolerancy: <input type="number" name="tol" value="0.0001" step="any"> <br/>
+		Method: <select name="method">
 			<option value="lbfgs" selected>lbfgs</option>
 			<option value="liblinear">liblinear</option>
 			<option value="newton-cg">newton-cg</option>
@@ -52,8 +52,8 @@
 			<option value="saga">saga</option>
 			</select>
 		</div>
-		<button type="submit">Zatwierdź</button>
-		<button type="submit" name="auto" id="auto">Auto</button><div id="wait">Proszę czekać</div>
+		<button type="submit">Submit</button>
+		<button type="submit" name="auto" id="auto">Auto</button><div id="wait">Please wait</div>
 	</form>
 	
 	</div>
