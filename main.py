@@ -8,11 +8,12 @@ from sklearn.metrics import confusion_matrix,accuracy_score,precision_score,reca
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, cross_val_predict
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.svm import SVC
-from sklearn.model_selection import cross_validate
+from sklearn.tree import DecisionTreeClassifier
 from werkzeug.utils import secure_filename
+from sklearn.model_selection import StratifiedKFold
 
 #reporty
 #gridsearchCV (auto dopasowanie)
@@ -41,6 +42,9 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "./tmp/"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+
+cv_splitter = StratifiedKFold(n_splits = 5)
+
 Session(app)
 
 class Result:
@@ -257,7 +261,7 @@ def result():
 		if alg=="Regresja logistyczna":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'solver' : ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}
-				gridsearch = GridSearchCV(estimator=LogisticRegression(),param_grid=param_grid).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=LogisticRegression(),param_grid=param_grid, cv=cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				max_iter = best_params["max_iter"]
@@ -274,10 +278,9 @@ def result():
 		elif alg=="KNN":
 			if 'auto' in request.form:
 				param_grid = {'n_neighbors' : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,20,30,50,100]}
-				gridsearch = GridSearchCV(estimator=KNeighborsClassifier(),param_grid=param_grid, cv=10).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=KNeighborsClassifier(),param_grid=param_grid, cv=cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
-				print(best_params)
 				n = best_params["n_neighbors"]
 			else:
 				if request.form['n']:
@@ -286,12 +289,14 @@ def result():
 						n=3
 				else:
 					n = 3
-				model = KNeighborsClassifier(n_neighbors=n).fit(dane,target)
+			result= cross_val_predict(KNeighborsClassifier(n_neighbors = n), dane,target, cv=cv_splitter)
+			print(result)
+				#model = KNeighborsClassifier(n_neighbors=n).fit(dane,target)
 			params = n
 		elif alg=="SVM":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'kernel' : ['linear', 'poly', 'sigmoid', 'rbf'], 'degree' : [2,3,4,5,6,7,8,9,10], 'C' : [0.5,1,3,5,10,20,50,100]}
-				gridsearch = GridSearchCV(estimator=SVC(),param_grid=param_grid,n_jobs=-3).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=SVC(),param_grid=param_grid,n_jobs=-3, cv=cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				max_iter = best_params["max_iter"]
@@ -319,7 +324,7 @@ def result():
 		elif alg=="Dummy":
 			if 'auto' in request.form:
 				param_grid = {'strategy' : ['most_frequent', 'uniform', 'prior', 'stratified']}
-				gridsearch = GridSearchCV(estimator=DummyClassifier(), param_grid=param_grid,n_jobs=-3).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=DummyClassifier(), param_grid=param_grid,n_jobs=-3, cv=cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				strategy = gridsearch.best_params_["strategy"]
 			else:
@@ -332,7 +337,7 @@ def result():
 		elif alg=="GBC":
 			if 'auto' in request.form:
 				param_grid = {'max_depth' : [1,3,5,10], 'tol' : [0.1, 0.01, 0.001], 'n_estimators' : [5,10,20,50,100,200,500,1000], 'learning_rate' : [0.01,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95,1], 'criterion' : ['friedman_mse', 'squared_error']}
-				gridsearch = GridSearchCV(estimator=GradientBoostingClassifier(),param_grid=param_grid,n_jobs=-3).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=GradientBoostingClassifier(),param_grid=param_grid,n_jobs=-3, cv = cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				max_depth = best_params["max_depth"]
@@ -346,13 +351,26 @@ def result():
 				criterion = request.form['criterion']
 				model = GradientBoostingClassifier(max_depth = max_depth, learning_rate = learning_rate, tol = tol, criterion = criterion, n_estimators = n_estimators).fit(dane,target)
 			params=""
-			
-			
-		scores = cross_validate(model, dane, target, scoring=["accuracy","precision_macro","recall_macro"], cv=10)
-		acc = np.average(scores["test_accuracy"])
-		prec = np.average(scores["test_precision_macro"])
-		rec = np.average(scores["test_recall_macro"])
-		result = model.predict(dane)	
+		elif alg=="DT":
+			if 'auto' in request.form:
+				param_grid = {'criterion' : ["gini", "entropy"], 'splitter' : ["best","random"]}
+				gridsearch = GridSearchCV(estimator=DecisionTreeClassifier(),param_grid=param_grid, cv=cv_splitter).fit(dane,target)
+				model = gridsearch.best_estimator_
+				best_params = gridsearch.best_params_
+				criterion = best_params["criterion"]
+				splitter = best_params["splitter"]
+			else:
+				criterion = request.form['criterion']
+				splitter = request.form['splitter']
+				model = DecisionTreeClassifier(criterion=criterion, splitter=splitter).fit(dane,target)
+			params = "Criterion: "+criterion+"<br/> Splitter: "+splitter
+
+
+		#result = cross_val_predict(model, dane,target, cv=cv_splitter)
+		#result = model.predict(dane)
+		acc = accuracy_score(result, target)
+		prec = precision_score(result, target, average="macro")
+		rec = recall_score(result, target, average="macro")
 		t = sorted(list(set(target)))
 		cm = confusion_matrix(result,target,labels=t)
 		confm = '<table><tr><td>T\\P</td>'

@@ -35,6 +35,11 @@ window.onload = function()
 			document.querySelector("#params").innerHTML = 'Learning rate: <input type="number" name="learning_rate" value="0.1" min="0" max="1"step="any" required> <br/>Tolerancja: <input type="number" name="tol" value=0.0001 step="any" required> <br/>Max depth: <input type="number" name="maxdepth" value="1" required><br/>N. estimators: <input type="number" name="nestimators" value="100" required><br/>Criterion: <select name="criterion"required><option value="friedman_mse"selected>Friedman_mse</option><option value="squared_error">squared_error</option>'	
 			curalg = algs
 		}
+		else if (algs=="DT")
+		{
+		document.querySelector("#params").innerHTML = 'Criterion: <select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select><br/>Splitter: <select name="splitter"><option value="best">Best</option><option value="random">Random best</option></select>'
+		curalg = algs
+		}
 		}
 },10)
 	
