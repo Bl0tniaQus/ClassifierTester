@@ -4,13 +4,13 @@ import numpy as np
 import os
 import webbrowser
 from copy import copy
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.metrics import confusion_matrix,accuracy_score,precision_score,recall_score, accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import GridSearchCV, cross_val_predict
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from werkzeug.utils import secure_filename
@@ -44,7 +44,7 @@ app.config['UPLOAD_FOLDER'] = "./tmp/"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
-cv_splitter = StratifiedKFold(n_splits = 5)
+cv_splitter = StratifiedKFold(n_splits = 10)
 
 Session(app)
 
@@ -60,6 +60,7 @@ class Result:
 	params=""
 	report=""
 	alg=""
+	class_distribution=""
 	acc=0
 	rec=0
 	prec=0
@@ -211,6 +212,11 @@ def klasyfikator():
 				vec.append(normalizuj(x,nmin,nmax,minv,maxv))
 			danet[row] = vec
 		dane = danet.transpose()
+		class_distribution =""
+		for x in set(target):
+			class_distribution += str(x) + ": "+str(list(target).count(x))+"<br/>"
+		print(class_distribution)
+		
 		if session["slot"]==1:
 			session['result1'].target_col=request.form["target"]
 			session['result1'].dane=dane
@@ -221,6 +227,7 @@ def klasyfikator():
 			session['result1'].acc=0
 			session['result1'].rec=0
 			session['result1'].prec=0
+			session['result1'].class_distribution=class_distribution
 		elif session["slot"]==2:
 			session['result2'].target_col=request.form["target"]
 			session['result2'].dane=dane
@@ -231,6 +238,7 @@ def klasyfikator():
 			session['result2'].acc=0
 			session['result2'].rec=0
 			session['result2'].prec=0
+			session['result2'].class_distribution=class_distribution
 	return render_template("klasyfikator.html")
 @app.route("/result", methods=["POST","GET"])
 def result():
@@ -260,10 +268,10 @@ def result():
 		elif session['slot']==2:
 			dane = session['result2'].dane
 			target = session['result2'].target
-		if alg=="Regresja logistyczna":
+		if alg=="LR":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'solver' : ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}
-				gridsearch = GridSearchCV(estimator=LogisticRegression(),param_grid=param_grid, cv=cv_splitter).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=LogisticRegression(),param_grid=param_grid, cv=cv_splitter,n_jobs=-3).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				max_iter = best_params["max_iter"]
@@ -280,7 +288,7 @@ def result():
 		elif alg=="KNN":
 			if 'auto' in request.form:
 				param_grid = {'n_neighbors' : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,20,30,50,100]}
-				gridsearch = GridSearchCV(estimator=KNeighborsClassifier(),param_grid=param_grid, cv=cv_splitter).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=KNeighborsClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=-3).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				n = best_params["n_neighbors"]
@@ -354,7 +362,7 @@ def result():
 		elif alg=="DT":
 			if 'auto' in request.form:
 				param_grid = {'criterion' : ["gini", "entropy"], 'splitter' : ["best","random"]}
-				gridsearch = GridSearchCV(estimator=DecisionTreeClassifier(),param_grid=param_grid, cv=cv_splitter).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=DecisionTreeClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=-3).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				criterion = best_params["criterion"]
@@ -364,6 +372,45 @@ def result():
 				splitter = request.form['splitter']
 				model = DecisionTreeClassifier(criterion=criterion, splitter=splitter).fit(dane,target)
 			params = "Criterion: "+criterion+"<br/> Splitter: "+splitter
+		elif alg=="RF":
+			if 'auto' in request.form:
+				param_grid = {'criterion' : ["gini", "entropy"], 'max_depth' : [-1, 1, 2, 3, 5, 10, 20, 50, 100], 'n_estimators': [3, 10, 50, 100,200,500,1000, 2500, 5000]}
+				gridsearch = GridSearchCV(estimator=RandomForestClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=-3).fit(dane,target)
+				model = gridsearch.best_estimator_
+				best_params = gridsearch.best_params_
+				criterion = best_params["criterion"]
+				max_depth = best_params["max_depth"]
+				n_estimators = best_params["n_estimators"]
+			else:
+				criterion = request.form['criterion']
+				n_estimators = int(request.form['n_estimators'])
+				max_depth = int(request.form['maxdepth'])
+				if max_depth<=0:
+					max_depth = None
+				model = RandomForestClassifier(criterion=criterion, max_depth=max_depth, n_estimators = n_estimators).fit(dane,target)
+			params = "Criterion: "+criterion+"<br/> No. of trees: "+str(n_estimators)+"<br/>Max depth: "+str(max_depth)
+		#######################3
+		elif alg=="Ridge":
+			if 'auto' in request.form:
+				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'solver' : ["svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga"], "alpha" : [0.1,0.5,1,2,3,5,10]}
+				gridsearch = GridSearchCV(estimator=RidgeClassifier(),param_grid=param_grid,n_jobs=-3, cv=cv_splitter).fit(dane,target)
+				model = gridsearch.best_estimator_
+				best_params = gridsearch.best_params_
+				max_iter = best_params["max_iter"]
+				tol = best_params["tol"]
+				solver = best_params["solver"]
+				alpha = best_params["alpha"]
+			else:
+				solver = request.form['solver']
+				alpha = float(request.form['alpha'])
+				max_iter = int(request.form['maxiter'])
+				if max_iter<-1:
+					max_iter=-1
+				if alpha<0:
+					c=1
+				tol = float(request.form['tol'])
+				model = RidgeClassifier(solver=solver,alpha=alpha,tol=tol,max_iter=max_iter).fit(dane,target)
+				params = 'Tolerancy: '+str(tol)+'<br/>Max iterations: '+str(max_iter)+'<br/>Alpha: '+str(alpha)+'<br/>Solver: '+str(solver);
 
 
 		result = cross_val_predict(model, dane,target, cv=cv_splitter)
@@ -373,7 +420,7 @@ def result():
 		rec = recall_score(result, target, average="macro")
 		t = sorted(list(set(target)))
 		cm = confusion_matrix(result,target,labels=t)
-		confm = '<table><tr><td>T\\P</td>'
+		confm = '<table><tr><td>P\\T</td>'
 		confm_report = ' '
 		for i in t:
 			confm=confm+'<td>'+i+'</td>'
@@ -390,6 +437,9 @@ def result():
 			confm_report=confm_report+'\n'
 		confm+='</table>'
 		report=''
+		
+		
+		
 		if session["slot"]==1:
 			session['result1'].confm=confm
 			session['result1'].params=params
@@ -404,7 +454,7 @@ def result():
 			report+='Accuracy: '+str(session['result1'].acc)+'\n'
 			report+='Precision: '+str(session['result1'].prec)+'\n'
 			report+='Recall: '+str(session['result1'].rec)+'\n'
-			report+='Confusion Matrix T\\P\n'+confm_report;
+			report+='Confusion Matrix P\\T\n'+confm_report;
 			session['result1'].report = report
 			
 			
@@ -422,7 +472,7 @@ def result():
 			report+='Accuracy: '+str(session['result2'].acc)+'\n'
 			report+='Precision: '+str(session['result2'].prec)+'\n'
 			report+='Recall: '+str(session['result2'].rec)+'\n'
-			report+='Confusion Matrix T\\P\n'+confm_report;
+			report+='Confusion Matrix P\\T\n'+confm_report;
 			session['result2'].report = report
 	print(len(session['result1'].dane))
 	return render_template("result.html")

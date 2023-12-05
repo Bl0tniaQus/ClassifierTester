@@ -23,47 +23,25 @@
 	{% if session['slot']==1%}
 	<h4>Algorithm: {{session['result1'].alg}}</h4>
 	Dane: {{session['result1'].filename}}<br />
-	{% if session['result1'].alg=="KNN" %}
-	n = {{session['result1'].params}} <br/>
-	{% endif %}
-	{% if session['result1'].alg=="Regresja logistyczna" %}
-	{{session['result1'].params|safe}} <br/><br/>
-	{% endif %}
-	{% if session['result1'].alg=="SVM" %}
-	{{session['result1'].params|safe}} <br/><br/>
-	{% endif %}
-	{% if session['result1'].alg=="Dummy" %}
-	{{session['result1'].params|safe}} <br/><br/>
-	{% endif %}
+	{{session['result1'].params|safe}}<br/><br/>
 	Accuracy = {{session['result1'].acc}}<br/>
 	Recall = {{session['result1'].rec}}<br/>
 	Precision = {{session['result1'].prec}}<br/>
 	<h5>Confusion Matrix</h5>
 	{{session['result1'].confm|safe}}
-	
+	{{session['result1'].class_distribution|safe}}
 	{% elif session['slot']==2%}
 	
 	
 	<h4>Algorithm: {{session['result2'].alg}}</h4>
 	Dataset: {{session['result2'].filename}}<br />
-	{% if session['result2'].alg=="KNN" %}
-	n = {{session['result2'].params}} <br/>
-	{% endif %}
-	{% if session['result2'].alg=="Regresja logistyczna" %}
-	{{session['result2'].params|safe}} <br/><br/>
-	{% endif %}
-	{% if session['result2'].alg=="SVM" %}
-	{{session['result2'].params|safe}} <br/><br/>
-	{% endif %}
-	{% if session['result2'].alg=="Dummy" %}
-	{{session['result2'].params|safe}} <br/><br/>
-	{% endif %}
+	{{session['result2'].params|safe}}<br/><br/>
 	Accuracy = {{session['result2'].acc}}<br/>
 	Recall = {{session['result2'].rec}}<br/>
 	Precision = {{session['result2'].prec}}<br/>
 	<h5>Macierz pomyłek</h5>
 	{{session['result2'].confm|safe}}
-
+	{{session['result2'].class_distribution|safe}}
 	{% endif %}
 	<form method="post" action="/result">
 		<button type="submit" name="report">Download report</button>

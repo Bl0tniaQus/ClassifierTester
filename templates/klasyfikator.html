@@ -33,14 +33,15 @@
 		<h4>Select algorithm</h4>
 		<form method="post" action="result">
 		<select id="algs" name="algs">
-			<option value="Regresja logistyczna" selected>Logistic regression</option>
-			<option value="KNN">KNN</option>
-			<option value="SVM">SVM</option>
-			<option value="Dummy">Dummy</option>
-			<option value="NB">Naive Bayes</option>
-			<option value="GBC">Gradient boosting</option>
-			<option value="DT">Decision tree</option>
-			<option value="RF">Random forest</option>
+			<option value="LR" selected>Logistic regression</option>
+			<option value="KNN">KNN classifier</option>
+			<option value="SVM">SVM classifier</option>
+			<option value="Dummy">Dummy classifier</option>
+			<option value="NB">Naive Bayes classifier</option>
+			<option value="GBC">Gradient boosting classifier</option>
+			<option value="DT">Decision tree classifier</option>
+			<option value="RF">Random forest classifier</option>
+			<option value="Ridge">Ridge classifier</option>
 		</select>
 		<div id="params">
 		Epochs: <input type="number" name="epoki" value="100" required><br/>

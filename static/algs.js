@@ -1,4 +1,4 @@
-var curalg = "Regresja logistyczna"
+var curalg = "LR"
 window.onload = function()
 {
 	setInterval(function(){
@@ -9,7 +9,7 @@ window.onload = function()
 			document.querySelector("#params").innerHTML = 'n: <input type="number" name="n" value="3" required>';
 			curalg = algs;
 		}
-		else if (algs=="Regresja logistyczna")
+		else if (algs=="LR")
 		{
 			document.querySelector("#params").innerHTML = 
 			'Epoki: <input type="number" name="epoki" value="100" required><br/>Tolerancja: <input type="number" name="tol" value=0.0001 step="any" required> <br/>Metoda: <select name="method"><option value="lbfgs" selected>lbfgs</option><option value="liblinear">liblinear</option><option value="newton-cg">newton-cg</option><option value="newton-cholesky">newton-cholesky</option><option value="sag">sag</option><option value="saga">saga</option></select>';
@@ -42,7 +42,12 @@ window.onload = function()
 		}
 		else if (algs=="RF")
 		{
-		document.querySelector("#params").innerHTML = 'No. of trees<input type="number" name="n_estimators" value="100" min="1" required><br/>Max depth(0 or negative for none)<input type="number" name="maxdepth" value="-1" required><br/>Criterion: <select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select><br/>'
+		document.querySelector("#params").innerHTML = 'No. of trees: <input type="number" name="n_estimators" value="100" min="1" required><br/>Max depth: (0 or negative for none)<input type="number" name="maxdepth" value="-1" required><br/>Criterion: <select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select><br/>'
+		curalg = algs
+		}
+		else if (algs=="Ridge")
+		{
+		document.querySelector("#params").innerHTML = '<table><tr><td>Alpha: </td><td><input type="number" name="alpha" value="1" min="0" step="any" required></td></tr><tr><td>Tolerancy: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Max iter(-1 - no limit): </td><td><input type="number" name="maxiter" value="100" required></td></tr><tr><td>Solver: </td><td><select name="solver"><option value="svd" selected>svd</option><option value="cholesky">cholesky</option><option value="lsqr">lsqr</option><option value="sparse_cg">sparse_cg</option><option value="sag">sag</option><option value="saga">saga</option></select></td></tr></table>'
 		curalg = algs
 		}
 		}
