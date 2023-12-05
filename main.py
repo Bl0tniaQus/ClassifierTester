@@ -2,9 +2,10 @@ from flask import Flask, render_template, session, request, redirect, url_for, s
 from flask_session import Session
 import numpy as np
 import os
+import webbrowser
 from copy import copy
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix,accuracy_score,precision_score,recall_score
+from sklearn.metrics import confusion_matrix,accuracy_score,precision_score,recall_score, accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -64,11 +65,12 @@ class Result:
 	prec=0
 
 def normalizuj(x,nmin,nmax,vmin,vmax):
-	return (nmax - (nmin)) * (x - vmin) / (vmax - vmin) + (nmin)
+	return (nmax - (nmin)) * (x - vmin) / ((vmax - vmin)+1*10**-100) + (nmin)
 def usunBraki(dane,target):
 	puste=[]
 	for x in range(len(dane)):
 		if '' in dane[x]:
+			print(dane[x])
 			puste.append(x)
 	dane = np.delete(dane, puste.copy(), axis=0)
 	target = np.delete(target,puste,axis=0)
@@ -76,7 +78,7 @@ def usunBraki(dane,target):
 def usunPusteKlasy(dane):
 	puste=[]
 	for x in range(len(dane)):
-		if dane[x][len(dane[x])-1]=='':
+		if dane[x][len(dane[x])-1]=='' or dane[x][len(dane[x])-1]=='?' or dane[x][len(dane[x])-1]=='-':
 			puste.append(x)
 	dane = np.delete(dane, puste, axis=0)
 	return dane
@@ -90,7 +92,7 @@ def etykietuj(dane):
 		for y in values:
 			if y=='':
 				continue
-			if (not y.isnumeric()):
+			if (not y.replace(".","").replace(",","").isnumeric()):
 				etykiety = range(len(values))
 				for x in range(len(row)):
 					if row[x]=='':
@@ -289,9 +291,7 @@ def result():
 						n=3
 				else:
 					n = 3
-			result= cross_val_predict(KNeighborsClassifier(n_neighbors = n), dane,target, cv=cv_splitter)
-			print(result)
-				#model = KNeighborsClassifier(n_neighbors=n).fit(dane,target)
+				model = KNeighborsClassifier(n_neighbors=n).fit(dane,target)
 			params = n
 		elif alg=="SVM":
 			if 'auto' in request.form:
@@ -366,7 +366,7 @@ def result():
 			params = "Criterion: "+criterion+"<br/> Splitter: "+splitter
 
 
-		#result = cross_val_predict(model, dane,target, cv=cv_splitter)
+		result = cross_val_predict(model, dane,target, cv=cv_splitter)
 		#result = model.predict(dane)
 		acc = accuracy_score(result, target)
 		prec = precision_score(result, target, average="macro")
@@ -439,7 +439,9 @@ def kopiuj():
 			session['result1'] = copy(session["result2"])
 	return render_template("kopiuj.html")
 if __name__ =="__main__":
+	#webbrowser.open("127.0.0.1:5000")
 	app.run(debug=True)
+	
 	
 
 

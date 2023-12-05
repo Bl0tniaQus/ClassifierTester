@@ -40,6 +40,11 @@ window.onload = function()
 		document.querySelector("#params").innerHTML = 'Criterion: <select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select><br/>Splitter: <select name="splitter"><option value="best">Best</option><option value="random">Random best</option></select>'
 		curalg = algs
 		}
+		else if (algs=="RF")
+		{
+		document.querySelector("#params").innerHTML = 'No. of trees<input type="number" name="n_estimators" value="100" min="1" required><br/>Max depth(0 or negative for none)<input type="number" name="maxdepth" value="-1" required><br/>Criterion: <select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select><br/>'
+		curalg = algs
+		}
 		}
 },10)
 	
