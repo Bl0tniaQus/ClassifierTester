@@ -11,33 +11,14 @@ from sklearn.dummy import DummyClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import GridSearchCV, cross_val_predict
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from werkzeug.utils import secure_filename
 from sklearn.model_selection import StratifiedKFold
 
-#reporty
-#gridsearchCV (auto dopasowanie)
-#algorytmy
-
-#lr
-#ridge
-#lda
-#rf
-#nb
-#gbc
-#knn
-#dt
-#dummy
-#svm
-
-#todo 14.11
-#lepsze reporty
-#algorytmy
-
-#KStratifiedFold random_state
-
-
+#Dodać help
+#X = data[:, [1, 9]]
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "./tmp/"
@@ -213,9 +194,9 @@ def klasyfikator():
 			danet[row] = vec
 		dane = danet.transpose()
 		class_distribution =""
-		for x in set(target):
+		for x in (sorted(list(set(target)))):
 			class_distribution += str(x) + ": "+str(list(target).count(x))+"<br/>"
-		print(class_distribution)
+		print()
 		
 		if session["slot"]==1:
 			session['result1'].target_col=request.form["target"]
@@ -300,7 +281,7 @@ def result():
 				else:
 					n = 3
 				model = KNeighborsClassifier(n_neighbors=n).fit(dane,target)
-			params = n
+			params = "n: "+str(n)
 		elif alg=="SVM":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'kernel' : ['linear', 'poly', 'sigmoid', 'rbf'], 'degree' : [2,3,4,5,6,7,8,9,10], 'C' : [0.5,1,3,5,10,20,50,100]}
@@ -389,7 +370,6 @@ def result():
 					max_depth = None
 				model = RandomForestClassifier(criterion=criterion, max_depth=max_depth, n_estimators = n_estimators).fit(dane,target)
 			params = "Criterion: "+criterion+"<br/> No. of trees: "+str(n_estimators)+"<br/>Max depth: "+str(max_depth)
-		#######################3
 		elif alg=="Ridge":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'solver' : ["svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga"], "alpha" : [0.1,0.5,1,2,3,5,10]}
@@ -411,8 +391,25 @@ def result():
 				tol = float(request.form['tol'])
 				model = RidgeClassifier(solver=solver,alpha=alpha,tol=tol,max_iter=max_iter).fit(dane,target)
 				params = 'Tolerancy: '+str(tol)+'<br/>Max iterations: '+str(max_iter)+'<br/>Alpha: '+str(alpha)+'<br/>Solver: '+str(solver);
-
-
+		elif alg=="LDA":
+			if 'auto' in request.form:
+				param_grid = {'solver' : ['svd', 'eigen', 'lsqr'], 'tol': [0.1, 0.01, 0.001], 'shrinkage' : [None, "auto"]}
+				gridsearch = GridSearchCV(estimator=LinearDiscriminantAnalysis(),param_grid=param_grid,n_jobs=-3, cv=cv_splitter).fit(dane,target)
+				model = gridsearch.best_estimator_
+				best_params = gridsearch.best_params_
+				shrinkage = best_params["shrinkage"]
+				tol = best_params["tol"]
+				solver = best_params["solver"]
+			else:
+				solver = request.form['solver']
+				shrinkage = request.form['shrinkage']
+				if shrinkage=="None":
+					shrinkage = None
+				tol = float(request.form['tol'])
+				model = LinearDiscriminantAnalysis(solver=solver,shrinkage=shrinkage,tol=tol).fit(dane,target)
+				if shrinkage == "auto":
+					shrinkage = "Ledoit-Wolf"
+			params = 'Tolerancy: '+str(tol)+'<br/>Solver: '+str(solver)+'<br/>Shrinkage: '+str(shrinkage);
 		result = cross_val_predict(model, dane,target, cv=cv_splitter)
 		#result = model.predict(dane)
 		acc = accuracy_score(result, target)
@@ -474,7 +471,6 @@ def result():
 			report+='Recall: '+str(session['result2'].rec)+'\n'
 			report+='Confusion Matrix P\\T\n'+confm_report;
 			session['result2'].report = report
-	print(len(session['result1'].dane))
 	return render_template("result.html")
 @app.route("/wyczysc")
 def wyczysc():

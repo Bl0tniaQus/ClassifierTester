@@ -50,6 +50,11 @@ window.onload = function()
 		document.querySelector("#params").innerHTML = '<table><tr><td>Alpha: </td><td><input type="number" name="alpha" value="1" min="0" step="any" required></td></tr><tr><td>Tolerancy: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Max iter(-1 - no limit): </td><td><input type="number" name="maxiter" value="100" required></td></tr><tr><td>Solver: </td><td><select name="solver"><option value="svd" selected>svd</option><option value="cholesky">cholesky</option><option value="lsqr">lsqr</option><option value="sparse_cg">sparse_cg</option><option value="sag">sag</option><option value="saga">saga</option></select></td></tr></table>'
 		curalg = algs
 		}
+		else if (algs=="LDA")
+		{
+		document.querySelector("#params").innerHTML = '<table><tr><td>Solver: </td><td><select name="solver"><option value="svd" selected>svd</option><option value="lsqr">lsqr</option><option value="eigen">eigen</option></select></td><tr><td>Shrinkage: </td><td><select name="shrinkage"><option value="None" selected>None</option><option value="auto">Ledoit-Wolf</option></select></td></tr></tr><tr><td>Tolerancy: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr></table>'
+		curalg = algs
+		}
 		}
 },10)
 	
