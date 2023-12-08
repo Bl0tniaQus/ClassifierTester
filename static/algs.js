@@ -6,23 +6,23 @@ window.onload = function()
 		if (curalg!=algs){
 		if (algs=="KNN") 
 		{
-			document.querySelector("#params").innerHTML = 'n: <input type="number" name="n" value="3" required>';
+			document.querySelector("#params").innerHTML = '<table><tr><td>n: </td><td><input type="number" name="n" value="3" required></td></tr></table>';
 			curalg = algs;
 		}
 		else if (algs=="LR")
 		{
 			document.querySelector("#params").innerHTML = 
-			'Epoki: <input type="number" name="epoki" value="100" required><br/>Tolerancja: <input type="number" name="tol" value=0.0001 step="any" required> <br/>Metoda: <select name="method"><option value="lbfgs" selected>lbfgs</option><option value="liblinear">liblinear</option><option value="newton-cg">newton-cg</option><option value="newton-cholesky">newton-cholesky</option><option value="sag">sag</option><option value="saga">saga</option></select>';
+			'<table><tr><td>Epoki: </td><td><input type="number" name="epoki" value="100" required></td></tr><tr><td>Tolerancja: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Metoda: </td><td><select name="method"><option value="lbfgs" selected>lbfgs</option><option value="liblinear">liblinear</option><option value="newton-cg">newton-cg</option><option value="newton-cholesky">newton-cholesky</option><option value="sag">sag</option><option value="saga">saga</option></select></td></tr></table>';
 			curalg = algs;
 		}
 		else if (algs=="SVM")
 		{
-			document.querySelector("#params").innerHTML = 'C: <input type="number" name="c" value="1" min="0" step="any" required> <br/>Tolerancja: <input type="number" name="tol" value=0.0001 step="any" required> <br/>Max. n. iteracji(-1 - bez limitu): <input type="number" name="maxiter" value="100" required><br/>Jądro: <select name="kernel"required><option value="linear"selected>Liniowe (linear)</option><option value="poly">Wielomianowe (poly)</option><option value="sigmoid">Sigmoidalne (sigmoid)</option><option value="rbf">RBF</option></select><br/>St. wielomianu(dla poly): <input type="number" name="degree" value="3" min="1" step="1" required>'	
+			document.querySelector("#params").innerHTML = '<table><tr><td>C: </td><td><input type="number" name="c" value="1" min="0" step="any" required></td></tr><tr><td>Tolerancja: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Max. n. iteracji(-1 - bez limitu): </td><td><input type="number" name="maxiter" value="100" required></td><tr><td>Jądro: </td><td><select name="kernel"required><option value="linear"selected>Liniowe (linear)</option><option value="poly">Wielomianowe (poly)</option><option value="sigmoid">Sigmoidalne (sigmoid)</option><option value="rbf">RBF</option></select></td></tr><tr><td>St. wielomianu(dla poly): </td><td><input type="number" name="degree" value="3" min="1" step="1" required></td></tr></table>'
 			curalg = algs
 		}
 		else if (algs=="Dummy")
 		{
-			document.querySelector("#params").innerHTML = 'Strategy: <select name="strategy"><option value="most_frequent">Most frequent</option><option value="prior">Prior</option><option value="stratified">Stratified</option><option value="uniform">Uniform</option></select>'	
+			document.querySelector("#params").innerHTML = '<table><tr><td>Strategy: </td><td><select name="strategy"><option value="most_frequent">Most frequent</option><option value="prior">Prior</option><option value="stratified">Stratified</option><option value="uniform">Uniform</option></select></td></tr></table>'	
 			curalg = algs
 		}
 		else if (algs=="NB")
@@ -32,17 +32,17 @@ window.onload = function()
 		}
 		else if (algs=="GBC")
 		{
-			document.querySelector("#params").innerHTML = 'Learning rate: <input type="number" name="learning_rate" value="0.1" min="0" max="1"step="any" required> <br/>Tolerancja: <input type="number" name="tol" value=0.0001 step="any" required> <br/>Max depth: <input type="number" name="maxdepth" value="1" required><br/>N. estimators: <input type="number" name="nestimators" value="100" required><br/>Criterion: <select name="criterion"required><option value="friedman_mse"selected>Friedman_mse</option><option value="squared_error">squared_error</option>'	
+			document.querySelector("#params").innerHTML = '<table><tr><td>Learning rate: </td><td><input type="number" name="learning_rate" value="0.1" min="0" max="1"step="any" required></td></tr><tr><td>Tolerancja: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Max depth: </td><td><input type="number" name="maxdepth" value="1" required></td></tr><tr><td>N. estimators: </td><td><input type="number" name="nestimators" value="100" required></td></tr><tr><td>Criterion: </td><td><select name="criterion"required><option value="friedman_mse"selected>Friedman_mse</option><option value="squared_error">squared_error</option></select></td></tr></table>'	
 			curalg = algs
 		}
 		else if (algs=="DT")
 		{
-		document.querySelector("#params").innerHTML = 'Criterion: <select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select><br/>Splitter: <select name="splitter"><option value="best">Best</option><option value="random">Random best</option></select>'
+		document.querySelector("#params").innerHTML = '<table><tr><td>Criterion: </td><td><select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select></td></tr><tr><td>Splitter: </td><td><select name="splitter"><option value="best">Best</option><option value="random">Random best</option></select></td></tr></table>'
 		curalg = algs
 		}
 		else if (algs=="RF")
 		{
-		document.querySelector("#params").innerHTML = 'No. of trees: <input type="number" name="n_estimators" value="100" min="1" required><br/>Max depth: (0 or negative for none)<input type="number" name="maxdepth" value="-1" required><br/>Criterion: <select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select><br/>'
+		document.querySelector("#params").innerHTML = '<table><tr><td>No. of trees: </td><td><input type="number" name="n_estimators" value="100" min="1" required></td></tr><tr><td>Max depth (0 or negative for none): </td><td><input type="number" name="maxdepth" value="-1" required></td></tr><tr><td>Criterion: </td><td><select name="criterion"><option value="gini" selected>Gini impurity</option><option value="log_loss">Cross-entropy loss</option></select></td></tr></table>'
 		curalg = algs
 		}
 		else if (algs=="Ridge")

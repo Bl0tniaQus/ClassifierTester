@@ -35,6 +35,7 @@ class Result:
 	preview=""
 	n_wierszy=0
 	target_col=0
+	data_cols = []
 	dane=[]
 	target=[]
 	confm=""
@@ -173,8 +174,26 @@ def klasyfikator():
 		dane = usunPusteKlasy(dane)
 		nmin = float(request.form["nmin"])
 		nmax = float(request.form["nmax"])
-		target = dane[:,int(request.form["target"])];
-		dane = np.delete(dane, int(request.form["target"]), 1)
+		target_col = int(request.form["target"])
+		if target_col < 0 or target_col>=dane.shape[1]:
+			target_col=dane.shape[1]-1
+		target = dane[:,target_col];
+		cols = request.form["columns"]
+		data_cols = []
+		for col in cols.strip().split(","):
+			char = col.strip()
+			if char.isnumeric():
+				if int(char)>=0 and int(char) < dane.shape[1] and int(char)!=target_col:
+					data_cols.append(int(char))
+		data_cols = list(set(data_cols))
+		if len(data_cols)==0:
+			for x in range(dane.shape[1]):
+				if x!=target_col:
+					data_cols.append(x)
+		print(data_cols)
+			
+		#dane = np.delete(dane, int(request.form["target"]), 1)
+		dane = dane[:,data_cols]
 		dane = etykietuj(dane)
 		if puste=="usun":
 			res = usunBraki(dane,target)
@@ -199,9 +218,10 @@ def klasyfikator():
 		print()
 		
 		if session["slot"]==1:
-			session['result1'].target_col=request.form["target"]
+			session['result1'].target_col=target_col
 			session['result1'].dane=dane
 			session['result1'].target=target
+			session['result1'].data_cols=data_cols
 			session['result1'].confm=""
 			session['result1'].params=""
 			session['result1'].alg=""
@@ -210,9 +230,10 @@ def klasyfikator():
 			session['result1'].prec=0
 			session['result1'].class_distribution=class_distribution
 		elif session["slot"]==2:
-			session['result2'].target_col=request.form["target"]
+			session['result2'].target_col=target_col
 			session['result2'].dane=dane
 			session['result2'].target=target
+			session['result2'].data_cols=data_cols
 			session['result2'].confm=""
 			session['result2'].params=""
 			session['result2'].alg=""

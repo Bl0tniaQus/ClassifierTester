@@ -29,6 +29,7 @@
 	{% endif %}
 	<form method="post" action="klasyfikator">
 		Column number with class names: <input type="number" name="target"required/><br />
+		Data columns(coma separated, leave empty for all): <input type="text" name="columns"/><br />
 		Normalization range: <input type="number" name="nmin" value="-1"/>-<input type="number" name="nmax" value="1"required/><br />
 		Include first row?: <input type="checkbox" name="pwiersz" checked><br/>
 		What to do with missing data?: <br/>

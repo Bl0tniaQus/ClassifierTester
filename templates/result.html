@@ -21,6 +21,7 @@
 	<div id="content">
 	Slot: {{session['slot']}}<br/>
 	{% if session['slot']==1%}
+	{{session['result1'].data_cols}}
 	<h4>Algorithm: {{session['result1'].alg}}</h4>
 	Dane: {{session['result1'].filename}}<br />
 	{{session['result1'].params|safe}}<br/><br/>
