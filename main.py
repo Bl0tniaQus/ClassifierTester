@@ -17,8 +17,7 @@ from sklearn.tree import DecisionTreeClassifier
 from werkzeug.utils import secure_filename
 from sklearn.model_selection import StratifiedKFold
 
-#Dodać help
-#X = data[:, [1, 9]]
+
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "./tmp/"
@@ -36,6 +35,9 @@ class Result:
 	n_wierszy=0
 	target_col=0
 	data_cols = []
+	norm_interval = []
+	first_row = ""
+	empty_data = ""
 	dane=[]
 	target=[]
 	confm=""
@@ -168,12 +170,16 @@ def klasyfikator():
 		elif session['slot']==2:
 			dane=session['result2'].dane_raw
 		if not request.form.get('pwiersz'):
+			firstrow = False
 			dane = np.delete(dane, (0), axis=0)
+		else:
+			firstrow = True
 		
 		puste = request.form["puste"]
 		dane = usunPusteKlasy(dane)
 		nmin = float(request.form["nmin"])
 		nmax = float(request.form["nmax"])
+		norm_interval = [nmin,nmax]
 		target_col = int(request.form["target"])
 		if target_col < 0 or target_col>=dane.shape[1]:
 			target_col=dane.shape[1]-1
@@ -190,7 +196,7 @@ def klasyfikator():
 			for x in range(dane.shape[1]):
 				if x!=target_col:
 					data_cols.append(x)
-		print(data_cols)
+		
 			
 		#dane = np.delete(dane, int(request.form["target"]), 1)
 		dane = dane[:,data_cols]
@@ -215,7 +221,6 @@ def klasyfikator():
 		class_distribution =""
 		for x in (sorted(list(set(target)))):
 			class_distribution += str(x) + ": "+str(list(target).count(x))+"<br/>"
-		print()
 		
 		if session["slot"]==1:
 			session['result1'].target_col=target_col
@@ -229,6 +234,10 @@ def klasyfikator():
 			session['result1'].rec=0
 			session['result1'].prec=0
 			session['result1'].class_distribution=class_distribution
+			session['result1'].norm_interval = norm_interval
+			session['result1'].data_cols = data_cols
+			session['result1'].first_row = firstrow
+			session['result1'].empty_data = puste
 		elif session["slot"]==2:
 			session['result2'].target_col=target_col
 			session['result2'].dane=dane
@@ -241,6 +250,10 @@ def klasyfikator():
 			session['result2'].rec=0
 			session['result2'].prec=0
 			session['result2'].class_distribution=class_distribution
+			session['result2'].norm_interval = norm_interval
+			session['result2'].data_cols = data_cols
+			session['result2'].first_row = firstrow
+			session['result2'].empty_data = puste
 	return render_template("klasyfikator.html")
 @app.route("/result", methods=["POST","GET"])
 def result():
@@ -467,12 +480,17 @@ def result():
 			session['result1'].prec=round(prec,5)
 			
 			report+='Dataset: '+session['result1'].filename+'\n'
+			report+='Data columns: '+str(session['result1'].data_cols)+'\n'
+			report+='Target column: '+str(session['result1'].target_col)+'\n'
+			report+='Empty: '+session['result1'].empty_data+'\n'
+			report+='First row: '+str(session['result1'].first_row)+'\n'
+			report+='Normalisation interval: '+str(session['result1'].norm_interval)+'\n'
 			report+='Method: '+session['result1'].alg+'\n'
-			report+='Params: '+str(session['result1'].params).replace("<br/>",'\n')+'\n'
-			report+='Accuracy: '+str(session['result1'].acc)+'\n'
+			report+='Params: \n'+str(session['result1'].params).replace("<br/>",'\n')+'\n'
+			report+='\nAccuracy: '+str(session['result1'].acc)+'\n'
 			report+='Precision: '+str(session['result1'].prec)+'\n'
 			report+='Recall: '+str(session['result1'].rec)+'\n'
-			report+='Confusion Matrix P\\T\n'+confm_report;
+			report+='\nConfusion Matrix P\\T\n'+confm_report;
 			session['result1'].report = report
 			
 			
@@ -485,12 +503,17 @@ def result():
 			session['result2'].prec=round(prec,5)
 			
 			report+='Dataset: '+session['result2'].filename+'\n'
+			report+='Data columns: '+str(session['result2'].data_cols)+'\n'
+			report+='Target column: '+str(session['result2'].target_col)+'\n'
+			report+='Empty: '+session['result2'].empty_data+'\n'
+			report+='First row: '+str(session['result2'].first_row)+'\n'
+			report+='Normalisation interval: '+str(session['result2'].norm_interval)+'\n'
 			report+='Method: '+session['result2'].alg+'\n'
-			report+='Params: '+str(session['result2'].params).replace("<br/>",'\n')+'\n'
-			report+='Accuracy: '+str(session['result2'].acc)+'\n'
+			report+='Params: \n'+str(session['result2'].params).replace("<br/>",'\n')+'\n'
+			report+='\nAccuracy: '+str(session['result2'].acc)+'\n'
 			report+='Precision: '+str(session['result2'].prec)+'\n'
 			report+='Recall: '+str(session['result2'].rec)+'\n'
-			report+='Confusion Matrix P\\T\n'+confm_report;
+			report+='\nConfusion Matrix P\\T\n'+confm_report;
 			session['result2'].report = report
 	return render_template("result.html")
 @app.route("/wyczysc")
