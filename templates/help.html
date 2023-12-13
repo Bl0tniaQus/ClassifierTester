@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+	
+	<div id="container">
+	
+	<div id="nav">
+	<p><a href="/">Data source</a></p>
+	<p><a href="/dane">Data options</a></p>
+	<p><a href="/klasyfikator">Algorithm</a></p>
+	<p><a href="/result">Result</a></p>
+	<p><a href="/kopiuj">Copy</a></p>
+	<p><form method="post" action="dane"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
+	<p><a id="wyczysc" href="/wyczysc">Reset</a></p>
+	<p><a href="/help">Help</a></p></p>
+	</div>
+	
+	<div id="content">
+		<h1>Help</h1>
+	<h2>Data source</h2>
+	This module is responsible for loading dataset from a file provided by the user. The file should contain data in rows and each data column should be separated by the same character or string. It is necessary to type what character or string is used to separate data in "Separator" field. Every row should end with a new line character.
+	<h2>Data Options</h2>
+	In this module it is possible to configure dataset loaded in previous module. To proceed further it is mandatory to specify which column in dataset contains target classes. Choosing columns used further in machine learning tasks is optional - every column number in that field should be separated by some string(coma or empty space for example) and leaving this field blank means that all columns will be used. There's a preview with three first rows of the loaded dataset to help with column selection. This module also allows to set normalisation interval, choose if first row should be included or not(file formats like .csv can have column names in first row) and specify what to do with missing data - delete rows with empty values or replace them with average for their class.
+	<h2>Algorithm</h2>
+	This module is responsible for configuring machine learning model used for classification. The "auto" button performs a search to find best parameters for chosen algorithm and current dataset. This operation however, can put heavy load on the CPU and should be used with caution. It is not recommened to interrupt this process in any way.
+	<h2>Result</h2>
+	This module shows classification results for tested model. It allows to download a detailed report, which is a text file containing all options used to achieve certain result.
+	<h2>Slots and copying</h2>
+	There are two slots which allow to store two different models at one time. It allows to easily compare models with each other. Buttons with number one and two are responsible for changing which slot is currently active. The "copy" module allows to copy currently saved model in one slot to another.
+	<h2>Reset</h2>
+	This option resets <b>everything</b> to the default state.
+	<h2>Important notices</h2>
+	<ul>
+	<li>To change anything in previous modules in a chain, it is recommened to redo every step in subsequent modules to make sure every change was correclty handled;</li>
+	<li>For small datasets, below 30 rows, it is recommened to multiply these rows in a file, because of the use of 10-fold cross validation which may cause inadequate classification results in small and not balanced datasets;</li>
+	<li><b>In case of any error, the best way is to go back to the root route - "/", for example "127.0.0.1:5000/". Most errors are caused by invalid input from the user or by trying to perform operations in the wrong order.</b></li>
+	</ul>
+	</div>
+	
+	
+	
+	</div>
+	
+	
+	
+	
+	
+	</body>
+</html>

@@ -30,6 +30,7 @@ width:88%;
 height:100%;
 outline: 1px solid black;
 padding-left:1%;
+overflow:scroll;
 }
 a:link, a:visited, a:active
 {

@@ -26,7 +26,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 cv_splitter = StratifiedKFold(n_splits = 10)
-
+njobs = -3
 Session(app)
 
 class Result:
@@ -273,7 +273,7 @@ def result():
 		if alg=="LR":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'solver' : ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}
-				gridsearch = GridSearchCV(estimator=LogisticRegression(),param_grid=param_grid, cv=cv_splitter,n_jobs=-3).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=LogisticRegression(),param_grid=param_grid, cv=cv_splitter,n_jobs=njobs).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				max_iter = best_params["max_iter"]
@@ -290,7 +290,7 @@ def result():
 		elif alg=="KNN":
 			if 'auto' in request.form:
 				param_grid = {'n_neighbors' : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,20,30,50,100]}
-				gridsearch = GridSearchCV(estimator=KNeighborsClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=-3).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=KNeighborsClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=njobs).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				n = best_params["n_neighbors"]
@@ -306,7 +306,7 @@ def result():
 		elif alg=="SVM":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'kernel' : ['linear', 'poly', 'sigmoid', 'rbf'], 'degree' : [2,3,4,5,6,7,8,9,10], 'C' : [0.5,1,3,5,10,20,50,100]}
-				gridsearch = GridSearchCV(estimator=SVC(),param_grid=param_grid,n_jobs=-3, cv=cv_splitter).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=SVC(),param_grid=param_grid,n_jobs=njobs, cv=cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				max_iter = best_params["max_iter"]
@@ -334,7 +334,7 @@ def result():
 		elif alg=="Dummy":
 			if 'auto' in request.form:
 				param_grid = {'strategy' : ['most_frequent', 'uniform', 'prior', 'stratified']}
-				gridsearch = GridSearchCV(estimator=DummyClassifier(), param_grid=param_grid,n_jobs=-3, cv=cv_splitter).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=DummyClassifier(), param_grid=param_grid,n_jobs=njobs, cv=cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				strategy = gridsearch.best_params_["strategy"]
 			else:
@@ -347,7 +347,7 @@ def result():
 		elif alg=="GBC":
 			if 'auto' in request.form:
 				param_grid = {'max_depth' : [1,3,5,10], 'tol' : [0.1, 0.01, 0.001], 'n_estimators' : [5,10,20,50,100,200,500,1000], 'learning_rate' : [0.01,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95,1], 'criterion' : ['friedman_mse', 'squared_error']}
-				gridsearch = GridSearchCV(estimator=GradientBoostingClassifier(),param_grid=param_grid,n_jobs=-3, cv = cv_splitter).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=GradientBoostingClassifier(),param_grid=param_grid,n_jobs=njobs, cv = cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				max_depth = best_params["max_depth"]
@@ -364,7 +364,7 @@ def result():
 		elif alg=="DT":
 			if 'auto' in request.form:
 				param_grid = {'criterion' : ["gini", "entropy"], 'splitter' : ["best","random"]}
-				gridsearch = GridSearchCV(estimator=DecisionTreeClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=-3).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=DecisionTreeClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=njobs).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				criterion = best_params["criterion"]
@@ -377,7 +377,7 @@ def result():
 		elif alg=="RF":
 			if 'auto' in request.form:
 				param_grid = {'criterion' : ["gini", "entropy"], 'max_depth' : [-1, 1, 2, 3, 5, 10, 20, 50, 100], 'n_estimators': [3, 10, 50, 100,200,500,1000, 2500, 5000]}
-				gridsearch = GridSearchCV(estimator=RandomForestClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=-3).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=RandomForestClassifier(),param_grid=param_grid, cv=cv_splitter,n_jobs=njobs).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				criterion = best_params["criterion"]
@@ -394,7 +394,7 @@ def result():
 		elif alg=="Ridge":
 			if 'auto' in request.form:
 				param_grid = {'max_iter' : [5, 10, 25, 50, 100, 250, 500, 1000], 'tol': [0.1, 0.01, 0.001], 'solver' : ["svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga"], "alpha" : [0.1,0.5,1,2,3,5,10]}
-				gridsearch = GridSearchCV(estimator=RidgeClassifier(),param_grid=param_grid,n_jobs=-3, cv=cv_splitter).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=RidgeClassifier(),param_grid=param_grid,n_jobs=njobs, cv=cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				max_iter = best_params["max_iter"]
@@ -415,7 +415,7 @@ def result():
 		elif alg=="LDA":
 			if 'auto' in request.form:
 				param_grid = {'solver' : ['svd', 'eigen', 'lsqr'], 'tol': [0.1, 0.01, 0.001], 'shrinkage' : [None, "auto"]}
-				gridsearch = GridSearchCV(estimator=LinearDiscriminantAnalysis(),param_grid=param_grid,n_jobs=-3, cv=cv_splitter).fit(dane,target)
+				gridsearch = GridSearchCV(estimator=LinearDiscriminantAnalysis(),param_grid=param_grid,n_jobs=njobs, cv=cv_splitter).fit(dane,target)
 				model = gridsearch.best_estimator_
 				best_params = gridsearch.best_params_
 				shrinkage = best_params["shrinkage"]
@@ -497,6 +497,9 @@ def result():
 def wyczysc():
 	session.clear()
 	return redirect("/")
+@app.route("/help")
+def help():
+	return render_template("help.html")
 @app.route("/kopiuj", methods=["POST","GET"])
 def kopiuj():
 	if request.method=="POST":
