@@ -139,7 +139,7 @@ def dane():
 			
 			if y==0:
 				for v in range(len(dane[y])):
-					preview=preview+'<td>Kol '+str(v)+'</td>'
+					preview=preview+'<td>Col '+str(v)+'</td>'
 				preview+='</tr>'
 			for x in dane[y]:
 				preview=preview+'<td>'+x+'</td>'
@@ -299,7 +299,7 @@ def result():
 				if max_iter<=0:
 					max_iter=100
 			model = LogisticRegression(max_iter = max_iter, tol = tol, solver=solver).fit(dane,target)
-			params='L. epok: '+str(max_iter)+'<br/>Tolerancy: '+str(tol)+'<br/>Solver: '+solver
+			params='Epochs: '+str(max_iter)+'<br/>Tolerancy: '+str(tol)+'<br/>Solver: '+solver
 		elif alg=="KNN":
 			if 'auto' in request.form:
 				param_grid = {'n_neighbors' : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,20,30,50,100]}
@@ -341,9 +341,9 @@ def result():
 				tol = float(request.form['tol'])
 				model = SVC(kernel=kernel,C=c,tol=tol,max_iter=max_iter,degree=degree).fit(dane,target)
 			if (kernel=="poly"):
-				params = 'Tolerancja: '+str(tol)+'<br/>Max iteration number: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Kernel: '+str(kernel)+'<br/>Polynominal degree: '+str(degree)
+				params = 'Tolerancy: '+str(tol)+'<br/>Max iteration number: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Kernel: '+str(kernel)+'<br/>Polynominal degree: '+str(degree)
 			else:
-				params = 'Tolerancja: '+str(tol)+'<br/>Max iteration number: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Kernel: '+str(kernel);
+				params = 'Tolerancy: '+str(tol)+'<br/>Max iteration number: '+str(max_iter)+'<br/>C: '+str(c)+'<br/>Kernel: '+str(kernel);
 		elif alg=="Dummy":
 			if 'auto' in request.form:
 				param_grid = {'strategy' : ['most_frequent', 'uniform', 'prior', 'stratified']}
@@ -520,12 +520,20 @@ def result():
 def wyczysc():
 	session.clear()
 	return redirect("/")
-@app.route("/help")
+@app.route("/help", methods=["POST", "GET"])
 def help():
+	if "slot" in request.form:
+			session["slot"] = int(request.form['slot'])
+			return redirect("/help")
 	return render_template("help.html")
 @app.route("/kopiuj", methods=["POST","GET"])
 def kopiuj():
 	if request.method=="POST":
+		
+		if "slot" in request.form:
+			session["slot"] = int(request.form['slot'])
+			return redirect("/kopiuj")
+		
 		if request.form['kopia']=="12":
 			session['result2'] = copy(session["result1"])
 		elif request.form['kopia']=="21":

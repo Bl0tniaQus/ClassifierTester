@@ -12,7 +12,7 @@ window.onload = function()
 		else if (algs=="LR")
 		{
 			document.querySelector("#params").innerHTML = 
-			'<table><tr><td>Epoki: </td><td><input type="number" name="epoki" value="100" required></td></tr><tr><td>Tolerancja: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Metoda: </td><td><select name="method"><option value="lbfgs" selected>lbfgs</option><option value="liblinear">liblinear</option><option value="newton-cg">newton-cg</option><option value="newton-cholesky">newton-cholesky</option><option value="sag">sag</option><option value="saga">saga</option></select></td></tr></table>';
+			'<table><tr><td>Epochs: </td><td><input type="number" name="epoki" value="100" required></td></tr><tr><td>Tolerancy: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Solver: </td><td><select name="method"><option value="lbfgs" selected>lbfgs</option><option value="liblinear">liblinear</option><option value="newton-cg">newton-cg</option><option value="newton-cholesky">newton-cholesky</option><option value="sag">sag</option><option value="saga">saga</option></select></td></tr></table>';
 			curalg = algs;
 		}
 		else if (algs=="SVM")

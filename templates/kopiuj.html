@@ -10,16 +10,18 @@
 	<div id="container">
 	
 	<div id="nav">
-	<p><a href="/">Źródlo danych</a></p>
-	<p><a href="/dane">Opcje danych</a></p>
-	<p><a href="/klasyfikator">Algorytm</a></p>
-	<p><a href="/wynik">Wynik</a></p>
-	<p><a href="/kopiuj">Kopiuj</a></p>
-	<p><a id="wyczysc" href="/wyczysc">Wyczyść</a></p>
+	<p><a href="/">Data source</a></p>
+	<p><a href="/dane">Data options</a></p>
+	<p><a href="/klasyfikator">Algorithm</a></p>
+	<p><a href="/result">Result</a></p>
+	<p><a href="/kopiuj">Copy</a></p>
+	<p><form method="post" action="kopiuj"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form>
+	<p><a id="wyczysc" href="/wyczysc">Reset</a></p>
+	<p><a href="/help">Help</a></p></p>
 	</div>
 	
 	<div id="content">
-	<h4>Kierunek kopiownia</h4>
+	<h4>Copy direction</h4>
 	<form method="post" action="kopiuj"><button type="submit" name="kopia" value="12">1 -&gt; 2</button></form>
 	<form method="post" action="kopiuj"><button type="submit" name="kopia" value="21">2 -&gt; 1</button></form>
 	
