@@ -64,7 +64,7 @@ def usunBraki(dane,target):
 		if '' in dane[x]:
 			print(dane[x])
 			puste.append(x)
-	dane = np.delete(dane, puste.copyf(), axis=0)
+	dane = np.delete(dane, puste.copy(), axis=0)
 	target = np.delete(target,puste,axis=0)
 	return [dane,target]
 def usunPusteKlasy(dane):
