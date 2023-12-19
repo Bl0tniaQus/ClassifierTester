@@ -119,6 +119,7 @@ def usrednijBraki(dane,target):
 				i = targetvals.index(target[row])
 				dane[row][col]=sums[i][col]/counts[i][col]
 	return dane
+	
 
 @app.route("/")
 def index():
@@ -561,7 +562,7 @@ def copy():
 			session['result1'] = copyf(session["result2"])
 	return render_template("copy.html")
 if __name__ =="__main__":
-	webbrowser.open("127.0.0.1:5000")
+	webbrowser.open("http://127.0.0.1:5000")
 	app.run(debug=True)
 	
 	
