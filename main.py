@@ -558,7 +558,7 @@ def copy():
 			session['result1'] = copyf(session["result2"])
 	return render_template("copy.html")
 if __name__ =="__main__":
-	#webbrowser.open("127.0.0.1:5000")
+	webbrowser.open("127.0.0.1:5000")
 	app.run(debug=True)
 	
 	
