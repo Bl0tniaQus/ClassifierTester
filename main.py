@@ -25,6 +25,8 @@ if platform_name == "Windows":
 	app.config['UPLOAD_FOLDER'] = ".\\tmp\\"
 else:	
 	app.config['UPLOAD_FOLDER'] = "./tmp/"
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+		os.mkdir(app.config['UPLOAD_FOLDER'])
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
@@ -135,6 +137,7 @@ def data():
 		p = request.files["dane"]
 		nazwa_pliku = secure_filename(p.filename)
 		p.save(app.config['UPLOAD_FOLDER']+nazwa_pliku)
+		
 		dane = np.loadtxt(app.config['UPLOAD_FOLDER'] + nazwa_pliku, delimiter=request.form["separator"], dtype='str')
 		os.remove(app.config['UPLOAD_FOLDER'] + nazwa_pliku)
 		
