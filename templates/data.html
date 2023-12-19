@@ -10,32 +10,32 @@
 	
 	<div id="nav">
 	<p><a href="/">Data source</a></p>
-	<p><a href="/dane">Data options</a></p>
-	<p><a href="/klasyfikator">Algorithm</a></p>
+	<p><a href="/data">Data options</a></p>
+	<p><a href="/classifier">Algorithm</a></p>
 	<p><a href="/result">Result</a></p>
-	<p><a href="/kopiuj">Copy</a></p>
-	<p><form method="post" action="klasyfikator"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
+	<p><a href="/copy">Copy</a></p>
+	<p><form method="post" action="classifier"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form></p>
 	<p><a id="wyczysc" href="/wyczysc">Reset</a></p>
 	<p><a href="/help">Help</a></p></p>
 	</div>
 	
 	<div id="content">
 	
-	<h4>Przygotuj dane</h4>
+	<h4>Prepare data</h4>
 	Slot: {{session['slot']}}<br/>
 	{% if session['slot']==1 %}
 	Current file: {{session['result1'].filename}}
 	{% elif session['slot']==2 %}
 	Current file: {{session['result2'].filename}}
 	{% endif %}
-	<form method="post" action="klasyfikator">
+	<form method="post" action="classifier">
 		Column number with class names: <input type="number" name="target"required/><br />
 		Data columns(coma separated, leave empty for all): <input type="text" name="columns"/><br />
 		Normalization range: <input type="number" name="nmin" value="-1"/>-<input type="number" name="nmax" value="1"required/><br />
 		Include first row?: <input type="checkbox" name="pwiersz" checked><br/>
 		What to do with missing data?: <br/>
-		Delete rows<input type="radio" name="puste" value="usun" checked><br/>
-		Find average<input type="radio" name="puste" value="usrednij"><br/>
+		Delete rows<input type="radio" name="puste" value="delete" checked><br/>
+		Find average<input type="radio" name="puste" value="avg"><br/>
 		<button type="submit">Submit</button>
 	</form>
 	{% if session['slot']==1 %}

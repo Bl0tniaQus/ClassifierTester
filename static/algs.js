@@ -17,7 +17,7 @@ window.onload = function()
 		}
 		else if (algs=="SVM")
 		{
-			document.querySelector("#params").innerHTML = '<table><tr><td>C: </td><td><input type="number" name="c" value="1" min="0" step="any" required></td></tr><tr><td>Tolerancja: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Max. n. iteracji(-1 - bez limitu): </td><td><input type="number" name="maxiter" value="100" required></td><tr><td>Jądro: </td><td><select name="kernel"required><option value="linear"selected>Liniowe (linear)</option><option value="poly">Wielomianowe (poly)</option><option value="sigmoid">Sigmoidalne (sigmoid)</option><option value="rbf">RBF</option></select></td></tr><tr><td>St. wielomianu(dla poly): </td><td><input type="number" name="degree" value="3" min="1" step="1" required></td></tr></table>'
+			document.querySelector("#params").innerHTML = '<table><tr><td>C: </td><td><input type="number" name="c" value="1" min="0" step="any" required></td></tr><tr><td>Tolerancy: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Max iterations(-1 - no limit): </td><td><input type="number" name="maxiter" value="100" required></td><tr><td>Kernel: </td><td><select name="kernel"required><option value="linear"selected>Linear</option><option value="poly">Polynominal</option><option value="sigmoid">Sigmoid</option><option value="rbf">RBF</option></select></td></tr><tr><td>Poly. degree: </td><td><input type="number" name="degree" value="3" min="1" step="1" required></td></tr></table>'
 			curalg = algs
 		}
 		else if (algs=="Dummy")
@@ -32,7 +32,7 @@ window.onload = function()
 		}
 		else if (algs=="GBC")
 		{
-			document.querySelector("#params").innerHTML = '<table><tr><td>Learning rate: </td><td><input type="number" name="learning_rate" value="0.1" min="0" max="1"step="any" required></td></tr><tr><td>Tolerancja: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Max depth: </td><td><input type="number" name="maxdepth" value="1" required></td></tr><tr><td>N. estimators: </td><td><input type="number" name="nestimators" value="100" required></td></tr><tr><td>Criterion: </td><td><select name="criterion"required><option value="friedman_mse"selected>Friedman_mse</option><option value="squared_error">squared_error</option></select></td></tr></table>'	
+			document.querySelector("#params").innerHTML = '<table><tr><td>Learning rate: </td><td><input type="number" name="learning_rate" value="0.1" min="0" max="1"step="any" required></td></tr><tr><td>Tolerancy: </td><td><input type="number" name="tol" value=0.0001 step="any" required></td></tr><tr><td>Max depth: </td><td><input type="number" name="maxdepth" value="1" required></td></tr><tr><td>N. estimators: </td><td><input type="number" name="nestimators" value="100" required></td></tr><tr><td>Criterion: </td><td><select name="criterion"required><option value="friedman_mse"selected>Friedman_mse</option><option value="squared_error">squared_error</option></select></td></tr></table>'	
 			curalg = algs
 		}
 		else if (algs=="DT")

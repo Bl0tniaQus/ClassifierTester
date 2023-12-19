@@ -11,11 +11,11 @@
 	
 	<div id="nav">
 	<p><a href="/">Data source</a></p>
-	<p><a href="/dane">Data options</a></p>
-	<p><a href="/klasyfikator">Algorithm</a></p>
+	<p><a href="/data">Data options</a></p>
+	<p><a href="/classifier">Algorithm</a></p>
 	<p><a href="/result">Result</a></p>
-	<p><a href="/kopiuj">Copy</a></p>
-	<p><form method="post" action="dane"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form>
+	<p><a href="/copy">Copy</a></p>
+	<p><form method="post" action="data"><button type="submit" name="slot" value="1">1</button><button type="submit" name="slot" value="2">2</button></form>
 	<p><a id="wyczysc" href="/wyczysc">Reset</a></p>
 	<p><a href="/help">Help</a></p></p>
 	</div>
@@ -28,7 +28,7 @@
 	Current file: {{session['result2'].filename}}
 	{% endif %}
 	<h4>Submit file containing data</h4>
-	<form method="post" action="dane" enctype=multipart/form-data>
+	<form method="post" action="data" enctype=multipart/form-data>
 		Select: <input type="file" name="dane" value="xd" required /><br/>
 		Separator: <input type="text" name="separator" required/>
 		<button type="submit">Submit</button>

@@ -2,8 +2,9 @@ from flask import Flask, render_template, session, request, redirect, url_for, s
 from flask_session import Session
 import numpy as np
 import os
+import platform
 import webbrowser
-from copy import copy
+from copy import copy as copyf
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.metrics import confusion_matrix,accuracy_score,precision_score,recall_score, accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
@@ -18,14 +19,18 @@ from werkzeug.utils import secure_filename
 from sklearn.model_selection import StratifiedKFold
 
 
-
+platform_name = platform.system()
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "./tmp/"
+if platform_name == "Windows":
+	app.config['UPLOAD_FOLDER'] = ".\\tmp\\"
+else:	
+	app.config['UPLOAD_FOLDER'] = "./tmp/"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 cv_splitter = StratifiedKFold(n_splits = 10)
 njobs = -3
+
 Session(app)
 
 class Result:
@@ -57,7 +62,7 @@ def usunBraki(dane,target):
 		if '' in dane[x]:
 			print(dane[x])
 			puste.append(x)
-	dane = np.delete(dane, puste.copy(), axis=0)
+	dane = np.delete(dane, puste.copyf(), axis=0)
 	target = np.delete(target,puste,axis=0)
 	return [dane,target]
 def usunPusteKlasy(dane):
@@ -121,8 +126,8 @@ def index():
 		session["result1"] = Result()
 		session["result2"] = Result()
 	return render_template("index.html")
-@app.route("/dane", methods=["POST","GET"])
-def dane():
+@app.route("/data", methods=["POST","GET"])
+def data():
 	if request.method=="POST":
 		if "slot" in request.form:
 			session["slot"] = int(request.form['slot'])
@@ -157,10 +162,10 @@ def dane():
 			session['result2'].filename=nazwa_pliku
 			session['result2'].dane_raw = dane
 	if 'preview' in session:
-		return render_template("dane.html")
-	return render_template("dane.html")
-@app.route("/klasyfikator", methods=["POST","GET"])
-def klasyfikator():
+		return render_template("data.html")
+	return render_template("data.html")
+@app.route("/classifier", methods=["POST","GET"])
+def classifier():
 	if request.method=="POST":
 		if "slot" in request.form:
 			session["slot"] = int(request.form['slot'])
@@ -201,11 +206,11 @@ def klasyfikator():
 		#dane = np.delete(dane, int(request.form["target"]), 1)
 		dane = dane[:,data_cols]
 		dane = etykietuj(dane)
-		if puste=="usun":
+		if puste=="delete":
 			res = usunBraki(dane,target)
 			dane = res[0]
 			target = res[1]
-		elif puste=="usrednij":
+		elif puste=="avg":
 			dane = usrednijBraki(dane,target)
 		dane = dane.astype(float)
 		danet = dane.transpose()
@@ -254,27 +259,40 @@ def klasyfikator():
 			session['result2'].data_cols = data_cols
 			session['result2'].first_row = firstrow
 			session['result2'].empty_data = puste
-	return render_template("klasyfikator.html")
+	return render_template("classifier.html")
 @app.route("/result", methods=["POST","GET"])
 def result():
 	if request.method=="POST":
 		if "slot" in request.form:
 			session["slot"] = int(request.form['slot'])
-			return redirect("/klasyfikator")
+			return redirect("/classifier")
 		if "slotw" in request.form:
 			session["slot"] = int(request.form['slotw'])
 			return redirect("/result")
 		if "report" in request.form:
-			if not os.path.exists('./tmp'):
-				os.mkdir('./tmp')
-			if os.path.exists('./tmp/report.txt'):
-				os.remove('./tmp/report.txt')
-			if not os.path.exists('./tmp/report.txt'):
-				with open('./tmp/report.txt', "w") as f:
-					if session['slot']==1:
-						f.write(session['result1'].report)
-					elif session['slot']==2:
-						f.write(session['result2'].report)
+			
+			if platform_name=="Windows":
+				if not os.path.exists('.\\tmp'):
+					os.mkdir('.\\tmp')
+				if os.path.exists('.\\tmp\\report.txt'):
+					os.remove('.\\tmp\\report.txt')
+				if not os.path.exists('.\\tmp\\report.txt'):
+					with open('.\\tmp\\report.txt', "w") as f:
+						if session['slot']==1:
+							f.write(session['result1'].report)
+						elif session['slot']==2:
+							f.write(session['result2'].report)
+			else:
+				if not os.path.exists('./tmp'):
+					os.mkdir('./tmp')
+				if os.path.exists('./tmp/report.txt'):
+					os.remove('./tmp/report.txt')
+				if not os.path.exists('./tmp/report.txt'):
+					with open('./tmp/report.txt', "w") as f:
+						if session['slot']==1:
+							f.write(session['result1'].report)
+						elif session['slot']==2:
+							f.write(session['result2'].report)
 			return send_file('./tmp/report.txt', as_attachment=True)
 		alg = request.form['algs']
 		if session['slot']==1:
@@ -373,7 +391,7 @@ def result():
 				n_estimators = int(request.form['nestimators'])
 				criterion = request.form['criterion']
 				model = GradientBoostingClassifier(max_depth = max_depth, learning_rate = learning_rate, tol = tol, criterion = criterion, n_estimators = n_estimators).fit(dane,target)
-			params=""
+			params = "Tolerancy: "+str(tol)+"<br/>Learning rate: "+str(learning_rate)+"<br/>Criterion: "+criterion+"<br/> No. of trees: "+str(n_estimators)+"<br/>Max depth: "+str(max_depth)
 		elif alg=="DT":
 			if 'auto' in request.form:
 				param_grid = {'criterion' : ["gini", "entropy"], 'splitter' : ["best","random"]}
@@ -526,19 +544,19 @@ def help():
 			session["slot"] = int(request.form['slot'])
 			return redirect("/help")
 	return render_template("help.html")
-@app.route("/kopiuj", methods=["POST","GET"])
-def kopiuj():
+@app.route("/copy", methods=["POST","GET"])
+def copy():
 	if request.method=="POST":
 		
 		if "slot" in request.form:
 			session["slot"] = int(request.form['slot'])
-			return redirect("/kopiuj")
+			return redirect("/copy")
 		
 		if request.form['kopia']=="12":
-			session['result2'] = copy(session["result1"])
+			session['result2'] = copyf(session["result1"])
 		elif request.form['kopia']=="21":
-			session['result1'] = copy(session["result2"])
-	return render_template("kopiuj.html")
+			session['result1'] = copyf(session["result2"])
+	return render_template("copy.html")
 if __name__ =="__main__":
 	#webbrowser.open("127.0.0.1:5000")
 	app.run(debug=True)
