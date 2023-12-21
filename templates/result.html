@@ -25,12 +25,14 @@
 	<h4>Algorithm: {{session['result1'].alg}}</h4>
 	Dataset: {{session['result1'].filename}}<br />
 	Data columns: {{session['result1'].data_cols}}<br/>
+	Target column: {{session['result1'].target_col}}<br/>
 	{{session['result1'].params|safe}}<br/><br/>
 	Accuracy = {{session['result1'].acc}}<br/>
 	Recall = {{session['result1'].rec}}<br/>
 	Precision = {{session['result1'].prec}}<br/>
 	<h5>Confusion Matrix</h5>
 	{{session['result1'].confm|safe}}
+	Class distribution: </br>
 	{{session['result1'].class_distribution|safe}}
 	{% elif session['slot']==2%}
 	
@@ -38,12 +40,14 @@
 	<h4>Algorithm: {{session['result2'].alg}}</h4>
 	Dataset: {{session['result2'].filename}}<br />
 	Data columns: {{session['result2'].data_cols}}<br/>
+	Target column: {{session['result2'].target_col}}<br/>
 	{{session['result2'].params|safe}}<br/><br/>
 	Accuracy = {{session['result2'].acc}}<br/>
 	Recall = {{session['result2'].rec}}<br/>
 	Precision = {{session['result2'].prec}}<br/>
 	<h5>Confusion Matrix</h5>
 	{{session['result2'].confm|safe}}
+	Class distribution: </br>
 	{{session['result2'].class_distribution|safe}}
 	{% endif %}
 	<form method="post" action="/result">
