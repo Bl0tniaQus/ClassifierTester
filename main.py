@@ -3,6 +3,7 @@ from flask_session import Session
 import numpy as np
 import os
 import platform
+import tempfile
 import webbrowser
 from copy import copy as copyf
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
@@ -31,6 +32,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 cv_splitter = StratifiedKFold(n_splits = 10)
+started = 0
 njobs = 1
 
 Session(app)
@@ -274,33 +276,15 @@ def result():
 			session["slot"] = int(request.form['slotw'])
 			return redirect("/result")
 		if "report" in request.form:
-			
-			if platform_name=="Windows":
-				if not os.path.exists('.\\tmp'):
-					os.mkdir('.\\tmp')
-				if os.path.exists('.\\tmp\\report.txt'):
-					os.remove('.\\tmp\\report.txt')
-				if not os.path.exists('.\\tmp\\report.txt'):
-					with open('.\\tmp\\report.txt', "w") as f:
-						if session['slot']==1:
-							f.write(session['result1'].report)
-						elif session['slot']==2:
-							f.write(session['result2'].report)
-			else:
-				if not os.path.exists('./tmp'):
-					os.mkdir('./tmp')
-				if os.path.exists('./tmp/report.txt'):
-					os.remove('./tmp/report.txt')
-				if not os.path.exists('./tmp/report.txt'):
-					with open('./tmp/report.txt', "w") as f:
-						if session['slot']==1:
-							f.write(session['result1'].report)
-						elif session['slot']==2:
-							f.write(session['result2'].report)
-			if platofm,name=="Windows":
-				return send_file('.\\tmp\\report.txt', as_attachment=True)
-			else:
-				return send_file('./tmp/report.txt', as_attachment=True)
+			if session['slot']==1:
+				report = session['result1'].report
+			elif session['slot']==2:
+				report = session['result2'].report
+			tmp_report = tempfile.TemporaryFile()
+			print(report)
+			tmp_report.write(bytes(report,'utf-8'))
+			tmp_report.seek(0)
+			return send_file(tmp_report, download_name="report.txt", as_attachment=True)
 		alg = request.form['algs']
 		if session['slot']==1:
 			dane = session['result1'].dane
@@ -554,7 +538,6 @@ def help():
 @app.route("/copy", methods=["POST","GET"])
 def copy():
 	if request.method=="POST":
-		
 		if "slot" in request.form:
 			session["slot"] = int(request.form['slot'])
 			return redirect("/copy")
@@ -565,7 +548,9 @@ def copy():
 			session['result1'] = copyf(session["result2"])
 	return render_template("copy.html")
 if __name__ =="__main__":
-	webbrowser.open("http://127.0.0.1:5000")
+	if started==0:
+		webbrowser.open("http://127.0.0.1:5000")
+		started=1
 	app.run(debug=True)
 	
 	
