@@ -31,7 +31,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 cv_splitter = StratifiedKFold(n_splits = 10)
-njobs = -3
+njobs = 1
 
 Session(app)
 
@@ -297,7 +297,10 @@ def result():
 							f.write(session['result1'].report)
 						elif session['slot']==2:
 							f.write(session['result2'].report)
-			return send_file('./tmp/report.txt', as_attachment=True)
+			if platofm,name=="Windows":
+				return send_file('.\\tmp\\report.txt', as_attachment=True)
+			else:
+				return send_file('./tmp/report.txt', as_attachment=True)
 		alg = request.form['algs']
 		if session['slot']==1:
 			dane = session['result1'].dane
