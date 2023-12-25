@@ -281,7 +281,6 @@ def result():
 			elif session['slot']==2:
 				report = session['result2'].report
 			tmp_report = tempfile.TemporaryFile()
-			print(report)
 			tmp_report.write(bytes(report,'utf-8'))
 			tmp_report.seek(0)
 			return send_file(tmp_report, download_name="report.txt", as_attachment=True)
