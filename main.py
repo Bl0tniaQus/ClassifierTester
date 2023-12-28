@@ -72,7 +72,7 @@ def usunBraki(dane,target):
 def usunPusteKlasy(dane):
 	puste=[]
 	for x in range(len(dane)):
-		if dane[x][len(dane[x])-1]=='' or dane[x][len(dane[x])-1]=='?' or dane[x][len(dane[x])-1]=='-':
+		if dane[x][len(dane[x])-1]=='' or dane[x][len(dane[x])-1]=='?':
 			puste.append(x)
 	dane = np.delete(dane, puste, axis=0)
 	return dane
